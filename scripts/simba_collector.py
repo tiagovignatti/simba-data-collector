@@ -1,6 +1,7 @@
 import requests
 import json
 import xml.etree.ElementTree as ET
+import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -82,6 +83,10 @@ class SimbaCollector:
             True if successful, False otherwise
         """
         try:
+            # Ensure output directory exists
+            output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+            os.makedirs(output_dir, exist_ok=True)
+            
             if filename is None:
                 municipality = data.get("filters", {}).get("municipality", "unknown")
                 start_date = data.get("filters", {}).get("start_date", "unknown")
@@ -98,10 +103,13 @@ class SimbaCollector:
                 
                 filename = f"simba_{municipality}_{end_date}_to_{start_date}.json"
             
-            with open(filename, 'w', encoding='utf-8') as f:
+            # Save to output directory
+            filepath = os.path.join(output_dir, filename)
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             
-            print(f"Data saved to {filename}")
+            print(f"Data saved to {filepath}")
             return True
             
         except Exception as e:
