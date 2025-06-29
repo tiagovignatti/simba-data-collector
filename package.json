@@ -1,0 +1,35 @@
+{
+  "name": "simba-data-collector",
+  "version": "1.0.0",
+  "description": "Interactive web viewer for marine wildlife rescue data from SIMBA project",
+  "main": "docs/index.html",
+  "scripts": {
+    "dev": "cd docs && python -m http.server 8082",
+    "build": "python scripts/build.py",
+    "start": "npm run build && npm run dev",
+    "clean": "rm -rf docs/*",
+    "update-data": "python scripts/update_files_index.py",
+    "serve": "npm run dev",
+    "deploy": "npm run build && git add . && git commit -m 'Build for deployment' && git push"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiagovignatti/simba-data-collector.git"
+  },
+  "keywords": [
+    "marine-biology",
+    "wildlife-rescue",
+    "data-visualization",
+    "leaflet",
+    "biodiversity",
+    "simba-project"
+  ],
+  "author": "Tiago Vignatti <tiago@vignatti.com> (https://vignatti.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tiagovignatti/simba-data-collector/issues"
+  },
+  "homepage": "https://tiagovignatti.github.io/simba-data-collector/",
+  "devDependencies": {},
+  "dependencies": {}
+}

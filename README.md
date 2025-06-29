@@ -15,58 +15,87 @@ Interactive web viewer for wildlife occurrence data from the SIMBA (Sistema de M
 
 ```
 ├── README.md              # Project documentation
-├── .gitignore            # Git ignore patterns
-├── scripts/              # Python data collection scripts
-│   └── simba_collector.py
+├── package.json          # NPM configuration and scripts
+├── scripts/              # Build and data collection scripts
+│   ├── build.py          # Build script for production
+│   ├── simba_collector.py # Data collection from SIMBA API
+│   └── update_files_index.py # Update file index
 ├── output/               # Generated JSON data files
-│   ├── simba_*.json      # Wildlife occurrence data
-├── src/                  # Web source files (development)
+│   └── simba_*.json      # Wildlife occurrence data
+├── src/                  # Source files (development)
 │   ├── index.html        # Main HTML page
-│   ├── viewer.js         # JavaScript functionality
-│   ├── viewer.css        # Styling
-│   └── .nojekyll         # GitHub Pages configuration
-└── public/               # Production files for GitHub Pages
-    ├── assets/           # Static assets (images, icons, etc.)
-    ├── index.html        # Production HTML
-    ├── viewer.js         # Production JavaScript
-    ├── viewer.css        # Production CSS
-    ├── .nojekyll         # GitHub Pages configuration
-    └── *.json            # Data files for web viewer
+│   ├── css/              # Modular CSS files
+│   ├── js/               # Modular JavaScript files
+│   ├── components/       # HTML components
+│   ├── pages/           # Page templates
+│   └── assets/          # Static assets
+└── docs/                # Production files for GitHub Pages
+    ├── index.html       # Built HTML
+    ├── css/             # Built CSS files
+    ├── js/              # Built JavaScript files
+    ├── assets/          # Static assets
+    ├── .nojekyll        # GitHub Pages configuration
+    └── *.json           # Data files for web viewer
 ```
 
 ## 🚀 Getting Started
 
-### Data Collection
+### Prerequisites
 
-1. **Install Python dependencies**:
+- Python 3.7+
+- Node.js and npm (optional, for convenient scripts)
+
+### Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/tiagovignatti/simba-data-collector.git
+   cd simba-data-collector
+   ```
+
+2. **Install Python dependencies**:
    ```bash
    pip install requests
    ```
 
-2. **Run the data collector**:
+3. **Development with npm** (recommended):
    ```bash
-   python scripts/simba_collector.py --municipality "Penha" --start-date "2025-01-01"
+   npm run dev      # Start development server
+   npm run build    # Build for production
+   npm start        # Build and serve
    ```
 
-3. **Data will be saved to** `output/` directory
+4. **Or traditional Python**:
+   ```bash
+   python scripts/build.py              # Build project
+   cd docs && python -m http.server 8082  # Serve locally
+   ```
 
-### Web Viewer
+### Data Collection
 
-1. **Local Development**:
-   - Open `src/index.html` in a web browser
-   - Or serve with a local HTTP server:
-     ```bash
-     python -m http.server 8080
-     ```
+```bash
+# Collect wildlife data
+python scripts/simba_collector.py --municipality "Penha" --start-date "2025-01-01"
 
-2. **GitHub Pages Deployment**:
-   - Files in `public/` directory are ready for GitHub Pages
-   - Enable GitHub Pages in repository settings
-   - Point to root directory or `/public` folder
+# Update data files index
+npm run update-data
+# or: python scripts/update_files_index.py
+```
+
+## 🔧 Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server (serves from docs/) |
+| `npm run build` | Build project from src/ to docs/ |
+| `npm start` | Build and serve (development workflow) |
+| `npm run clean` | Clean docs/ directory |
+| `npm run update-data` | Update files index with available data |
+| `npm run deploy` | Build, commit, and push to GitHub |
 
 ## 🔧 Usage
 
-### Data Collection Script
+### Data Collection
 
 ```bash
 # Collect data for Penha municipality from 2025-01-01
@@ -74,6 +103,9 @@ python scripts/simba_collector.py --municipality "Penha" --start-date "2025-01-0
 
 # Collect data for different municipality
 python scripts/simba_collector.py --municipality "Florianópolis" --start-date "2024-01-01"
+
+# Update the web app with new data
+npm run update-data && npm run build
 ```
 
 ### Web Viewer Features
