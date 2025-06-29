@@ -1,46 +1,10 @@
 // Shared utilities and constants
 
-// Translation system
-const translations = {
-    pt: {
-        noDataLoaded: 'Nenhum dado carregado',
-        showingRecords: 'Mostrando {count} ocorrências',
-        noOccurrences: 'Nenhuma ocorrência encontrada',
-        unknownSpecies: 'Espécie Desconhecida',
-        unknownLocation: 'Local Desconhecido',
-        unknown: 'Desconhecido',
-        recordedBy: 'Registrado por:',
-        date: 'Data:',
-        location: 'Local:',
-        lifeStage: 'Estágio de Vida:',
-        habitat: 'Habitat:',
-        loadError: 'Falha ao carregar arquivo de dados:',
-        selectFile: 'Por favor selecione um arquivo de dados',
-        noDataExport: 'Nenhum dado para exportar'
-    },
-    en: {
-        noDataLoaded: 'No data loaded',
-        showingRecords: 'Showing {count} occurrences',
-        noOccurrences: 'No occurrences found',
-        unknownSpecies: 'Unknown Species',
-        unknownLocation: 'Unknown Location',
-        unknown: 'Unknown',
-        recordedBy: 'Recorded by:',
-        date: 'Date:',
-        location: 'Location:',
-        lifeStage: 'Life Stage:',
-        habitat: 'Habitat:',
-        loadError: 'Failed to load data file:',
-        selectFile: 'Please select a data file',
-        noDataExport: 'No data to export'
-    }
-};
-
 // Utility functions
 const Utils = {
-    // Get translation for current language
-    t(key, lang = 'pt') {
-        return translations[lang][key] || key;
+    // Use global i18n service for translations
+    t(key, params = {}) {
+        return window.i18n ? window.i18n.t(key, params) : key;
     },
 
     // Format date for display
@@ -111,20 +75,6 @@ const Utils = {
         });
     },
 
-    // Update language elements
-    updateLanguageElements(lang) {
-        const elements = document.querySelectorAll('[data-pt][data-en]');
-        elements.forEach(element => {
-            const text = element.getAttribute(`data-${lang}`);
-            if (text) {
-                if (element.tagName === 'TITLE') {
-                    element.textContent = text;
-                } else {
-                    element.innerHTML = text;
-                }
-            }
-        });
-    },
 
     // Debounce function for performance
     debounce(func, wait) {

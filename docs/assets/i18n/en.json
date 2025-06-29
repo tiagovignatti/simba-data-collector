@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Marine Wildlife Rescue",
+    "subtitle": "Environmental Monitoring System"
+  },
+  "navigation": {
+    "backToSelection": "← Back to City Selection",
+    "languageToggle": "🌐 PT"
+  },
+  "citySelection": {
+    "title": "Select City of Interest",
+    "subtitle": "Choose a city to view marine wildlife rescue data",
+    "viewData": "View Data"
+  },
+  "dataViewer": {
+    "dataFrom": "Data from:",
+    "period": "Period:",
+    "loading": "Loading...",
+    "municipality": "Municipality:",
+    "startDate": "Start Date:",
+    "endDate": "End Date:",
+    "totalRecords": "Total Records:",
+    "filterByLocality": "Filter by Locality:",
+    "allLocalities": "All Localities",
+    "occurrencesInLocality": "Occurrences in this locality:",
+    "occurrenceRecords": "Occurrence Records",
+    "exportCSV": "Export CSV",
+    "showingRecords": "Showing {count} records",
+    "noOccurrences": "Load a data file to view occurrences",
+    "noDataExport": "No data available to export"
+  },
+  "species": {
+    "unknownSpecies": "Unknown Species",
+    "unknownLocation": "Unknown Location",
+    "unknown": "Unknown"
+  },
+  "fields": {
+    "date": "Date",
+    "location": "Location",
+    "recordedBy": "Recorded by",
+    "lifeStage": "Life Stage",
+    "habitat": "Habitat"
+  },
+  "errors": {
+    "selectFile": "Please select a data file",
+    "loadError": "Error loading data:"
+  },
+  "footer": {
+    "dataSource": "Data source: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Petrobras Environmental Monitoring System</a>",
+    "copyright": "Copyright © 2025 <a href='https://vignatti.com' target='_blank'>Tiago Vignatti</a>"
+  }
+}

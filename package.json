@@ -4,11 +4,13 @@
   "description": "Interactive web viewer for marine wildlife rescue data from SIMBA project",
   "main": "docs/index.html",
   "scripts": {
-    "dev": "echo '🚀 Starting development server at http://localhost:8082' && cd docs && python3 -m http.server 8082 --bind 127.0.0.1",
+    "dev": "echo '🚀 Starting development server at http://localhost:8082' && lsof -ti:8082 | xargs kill -9 2>/dev/null || true && cd docs && python3 -m http.server 8082 --bind 127.0.0.1",
     "build": "python3 scripts/build.py",
     "start": "npm run build && npm run dev",
     "clean": "rm -rf docs/*",
     "update-data": "python3 scripts/update_files_index.py",
+    "collect-all": "python3 scripts/collect_all_data.py",
+    "collect-and-build": "npm run collect-all && npm run update-data && npm run build",
     "serve": "npm run dev",
     "deploy": "npm run build && git add . && git commit -m 'Build for deployment' && git push"
   },

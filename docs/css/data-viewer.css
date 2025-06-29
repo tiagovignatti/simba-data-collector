@@ -39,39 +39,44 @@
     margin-bottom: 2rem;
 }
 
-.file-selector {
+/* Period Selector */
+.period-selector {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.file-selector label {
-    display: block;
-    margin-bottom: 0.5rem;
+.period-selector label {
+    color: #333;
     font-weight: 500;
+    font-size: 1.1rem;
 }
 
-.file-selector select {
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 1rem;
-    min-width: 200px;
-}
-
-.file-selector button {
-    background: #4a7c59;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
+.period-selector select {
+    padding: 0.7rem 1rem;
+    border: 2px solid #4a7c59;
+    border-radius: 8px;
+    min-width: 150px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: white;
+    color: #333;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
 }
 
-.file-selector button:hover {
-    background: #2c5530;
+.period-selector select:hover {
+    border-color: #2c5530;
+    box-shadow: 0 2px 4px rgba(74, 124, 89, 0.2);
+}
+
+.period-selector select:focus {
+    outline: none;
+    border-color: #2c5530;
+    box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
 }
 
 /* Dataset Info */

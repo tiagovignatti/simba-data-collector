@@ -31,9 +31,9 @@ class DataViewer {
 
     bindEvents() {
         // Data viewer specific events
-        const loadDataBtn = document.getElementById('loadData');
-        if (loadDataBtn) {
-            loadDataBtn.addEventListener('click', () => this.loadSelectedFile());
+        const periodSelect = document.getElementById('periodSelect');
+        if (periodSelect) {
+            periodSelect.addEventListener('change', () => this.loadSelectedPeriod());
         }
 
         const exportBtn = document.getElementById('exportBtn');
@@ -69,6 +69,26 @@ class DataViewer {
 
     setLanguage(lang) {
         this.currentLang = lang;
+        
+        // Update period display names when language changes
+        if (this.availablePeriods) {
+            this.updatePeriodDisplayNames();
+        }
+    }
+
+    updatePeriodDisplayNames() {
+        const periodSelect = document.getElementById('periodSelect');
+        if (periodSelect && this.availablePeriods) {
+            // Update each option's display name
+            this.availablePeriods.forEach((period, index) => {
+                const option = periodSelect.options[index + 1]; // +1 to skip loading option
+                if (option) {
+                    const newDisplayName = this.formatPeriodDisplay(period.year, period.dateRange);
+                    option.textContent = newDisplayName;
+                    period.displayName = newDisplayName;
+                }
+            });
+        }
     }
 
     goBackToSelection() {
@@ -86,18 +106,16 @@ class DataViewer {
         }
     }
 
-    async loadAvailableFiles() {
-        const fileSelect = document.getElementById('dataFile');
+    async loadAvailablePeriods() {
+        const periodSelect = document.getElementById('periodSelect');
         
-        if (!fileSelect) {
-            console.error('dataFile select element not found');
+        if (!periodSelect) {
+            console.error('periodSelect element not found');
             return;
         }
         
-        // Clear existing options except the first one
-        while (fileSelect.children.length > 1) {
-            fileSelect.removeChild(fileSelect.lastChild);
-        }
+        // Clear existing options
+        periodSelect.innerHTML = '';
         
         // Try to load files from index, with fallback to discovery
         const availableFiles = await this.loadFilesFromIndex();
@@ -117,20 +135,129 @@ class DataViewer {
             );
         }
 
-        availableFiles.forEach((file, index) => {
+        // Extract years from filenames and create period options
+        const periods = await this.extractPeriodsFromFiles(availableFiles);
+        
+        periods.forEach(period => {
             const option = document.createElement('option');
-            option.value = file;
-            const displayName = file.replace('.json', '').replace('simba_', '').replace(/_/g, ' ');
-            option.textContent = displayName;
-            fileSelect.appendChild(option);
+            option.value = period.year;
+            option.textContent = period.displayName;
+            option.dataset.files = JSON.stringify(period.files);
+            periodSelect.appendChild(option);
         });
         
-        // Force refresh the select element
-        fileSelect.style.display = 'none';
-        fileSelect.offsetHeight; // Trigger reflow
-        fileSelect.style.display = '';
+        console.log(`Loaded ${periods.length} periods`);
         
-        console.log(`Loaded ${availableFiles.length} data files`);
+        // Store available files and periods
+        this.availableFiles = availableFiles;
+        this.availablePeriods = periods;
+    }
+
+    async extractPeriodsFromFiles(files) {
+        const periodMap = new Map();
+        
+        // Load file metadata to get actual date ranges
+        for (const filename of files) {
+            const yearMatch = filename.match(/(\d{4})/);
+            if (yearMatch) {
+                const year = yearMatch[1];
+                
+                if (!periodMap.has(year)) {
+                    periodMap.set(year, {
+                        year: year,
+                        displayName: year,
+                        files: [],
+                        dateRange: null
+                    });
+                }
+                
+                periodMap.get(year).files.push(filename);
+            }
+        }
+        
+        // Now get actual date ranges from file data
+        for (const [year, periodInfo] of periodMap) {
+            const dateRange = await this.getDateRangeForPeriod(periodInfo.files);
+            periodInfo.dateRange = dateRange;
+            periodInfo.displayName = this.formatPeriodDisplay(year, dateRange);
+        }
+        
+        // Convert to array and sort by year (newest first)
+        const periods = Array.from(periodMap.values()).sort((a, b) => b.year - a.year);
+        
+        return periods;
+    }
+
+    async getDateRangeForPeriod(files) {
+        let startDate = null;
+        let endDate = null;
+        
+        // Only load the first available file to get date range for performance
+        // This assumes all files for a year contain similar date ranges
+        const cityFiles = files.filter(filename => 
+            !this.selectedCity || filename.toLowerCase().includes(this.selectedCity.toLowerCase())
+        );
+        
+        const fileToCheck = cityFiles.length > 0 ? cityFiles[0] : files[0];
+        
+        if (fileToCheck) {
+            try {
+                const response = await fetch(`/${fileToCheck}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.records && data.records.length > 0) {
+                        const dates = data.records
+                            .map(record => record.eventDate)
+                            .filter(date => date)
+                            .map(dateString => {
+                                try {
+                                    return new Date(dateString);
+                                } catch {
+                                    return null;
+                                }
+                            })
+                            .filter(date => date && !isNaN(date.getTime()));
+                        
+                        if (dates.length > 0) {
+                            startDate = new Date(Math.min(...dates));
+                            endDate = new Date(Math.max(...dates));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn(`Could not load date range for ${fileToCheck}:`, error);
+            }
+        }
+        
+        return { startDate, endDate };
+    }
+
+    formatPeriodDisplay(year, dateRange) {
+        const currentLang = this.currentLang || 'pt';
+        
+        if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
+            return year; // Fallback to just year
+        }
+        
+        const startDate = dateRange.startDate;
+        const endDate = dateRange.endDate;
+        const currentYear = new Date().getFullYear();
+        
+        // Format dates according to language
+        const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+        const options = { month: 'short', day: 'numeric' };
+        
+        if (parseInt(year) === currentYear) {
+            // For current year, show "2025: Jan 1 - Jun 28" (up to latest occurrence)
+            const startFormatted = startDate.toLocaleDateString(locale, options);
+            const endFormatted = endDate.toLocaleDateString(locale, options);
+            return `${year}: ${startFormatted} - ${endFormatted}`;
+        } else {
+            // For past years, show "2024: Ano completo" or "2024: Full year"
+            const fullYearText = currentLang === 'pt' ? 'Ano completo' : 'Full year';
+            return `${year}: ${fullYearText}`;
+        }
     }
     
     async loadFilesFromIndex() {
@@ -201,29 +328,42 @@ class DataViewer {
         return discoveredFiles;
     }
 
-    async loadSelectedFile() {
-        const fileSelect = document.getElementById('dataFile');
-        const selectedFile = fileSelect.value;
+    async loadSelectedPeriod() {
+        const periodSelect = document.getElementById('periodSelect');
+        const selectedYear = periodSelect.value;
         
-        if (!selectedFile) {
-            alert(Utils.t('selectFile', this.currentLang));
+        if (!selectedYear) {
             return;
         }
 
-        try {
-            const response = await fetch(`/${selectedFile}`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        // Find the best file for this year and city
+        const selectedOption = periodSelect.options[periodSelect.selectedIndex];
+        const filesForPeriod = JSON.parse(selectedOption.dataset.files || '[]');
+        
+        let fileToLoad = null;
+        
+        if (this.selectedCity) {
+            // Filter files by city name
+            const cityFiles = filesForPeriod.filter(filename => 
+                filename.toLowerCase().includes(this.selectedCity.toLowerCase())
+            );
             
-            this.currentData = await response.json();
-            this.filteredData = [...this.currentData.records];
-            
-            this.displayDatasetInfo();
-            this.displayData();
-            this.updateRecordCount();
-            
-        } catch (error) {
-            console.error('Error loading data:', error);
-            alert(`${Utils.t('loadError', this.currentLang)} ${error.message}`);
+            if (cityFiles.length > 0) {
+                // Use the first (or best matching) file for this city
+                fileToLoad = cityFiles[0];
+            }
+        }
+        
+        // Fall back to first file if no city-specific match
+        if (!fileToLoad && filesForPeriod.length > 0) {
+            fileToLoad = filesForPeriod[0];
+        }
+        
+        if (fileToLoad) {
+            console.log(`Loading period ${selectedYear} with file: ${fileToLoad}`);
+            await this.loadFileByName(fileToLoad);
+        } else {
+            console.error(`No data file found for period ${selectedYear}`);
         }
     }
 
@@ -508,6 +648,47 @@ class DataViewer {
         
         this.displayData();
         this.updateRecordCount();
+    }
+
+    autoLoadRecentData() {
+        if (!this.availablePeriods || this.availablePeriods.length === 0) {
+            console.log('No available periods to auto-load');
+            return;
+        }
+
+        // Find the most recent period (2025 preferred, then most recent year)
+        const mostRecentPeriod = this.availablePeriods[0]; // Already sorted newest first
+        
+        console.log(`Auto-loading most recent period: ${mostRecentPeriod.year}`);
+        
+        // Set the dropdown to the most recent period
+        const periodSelect = document.getElementById('periodSelect');
+        if (periodSelect) {
+            periodSelect.value = mostRecentPeriod.year;
+        }
+        
+        // Load the data for this period
+        this.loadSelectedPeriod();
+    }
+
+    async loadFileByName(filename) {
+        try {
+            const response = await fetch(`/${filename}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            this.currentData = await response.json();
+            this.filteredData = [...this.currentData.records];
+            
+            this.displayDatasetInfo();
+            this.displayData();
+            this.updateRecordCount();
+            
+            console.log(`Successfully loaded ${filename} with ${this.currentData.records.length} records`);
+            
+        } catch (error) {
+            console.error('Error loading data file:', error);
+            // Don't show alert for auto-loading, just log the error
+        }
     }
 }
 

@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Resgate de Fauna Marinha",
+    "subtitle": "Sistema de Monitoramento Ambiental"
+  },
+  "navigation": {
+    "backToSelection": "← Voltar para Seleção de Cidade",
+    "languageToggle": "🌐 EN"
+  },
+  "citySelection": {
+    "title": "Selecione a Cidade de Interesse",
+    "subtitle": "Escolha uma cidade para visualizar os dados de resgate de fauna marinha",
+    "viewData": "Visualizar Dados"
+  },
+  "dataViewer": {
+    "dataFrom": "Dados de:",
+    "period": "Período:",
+    "loading": "Carregando...",
+    "municipality": "Município:",
+    "startDate": "Data Inicial:",
+    "endDate": "Data Final:",
+    "totalRecords": "Total de Registros:",
+    "filterByLocality": "Filtrar por Localidade:",
+    "allLocalities": "Todas as Localidades",
+    "occurrencesInLocality": "Ocorrências nesta localidade:",
+    "occurrenceRecords": "Registros de Ocorrência",
+    "exportCSV": "Exportar CSV",
+    "showingRecords": "Mostrando {count} registros",
+    "noOccurrences": "Carregue um arquivo de dados para visualizar as ocorrências",
+    "noDataExport": "Nenhum dado disponível para exportar"
+  },
+  "species": {
+    "unknownSpecies": "Espécie Desconhecida",
+    "unknownLocation": "Local Desconhecido",
+    "unknown": "Desconhecido"
+  },
+  "fields": {
+    "date": "Data",
+    "location": "Localização",
+    "recordedBy": "Registrado por",
+    "lifeStage": "Estágio de Vida",
+    "habitat": "Habitat"
+  },
+  "errors": {
+    "selectFile": "Por favor, selecione um arquivo de dados",
+    "loadError": "Erro ao carregar dados:"
+  },
+  "footer": {
+    "dataSource": "Fonte de dados: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Sistema de Monitoramento Ambiental Petrobras</a>",
+    "copyright": "Copyright © 2025 <a href='https://vignatti.com' target='_blank'>Tiago Vignatti</a>"
+  }
+}

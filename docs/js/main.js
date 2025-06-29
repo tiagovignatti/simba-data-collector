@@ -19,7 +19,10 @@ class SimbaApp {
         }
     }
 
-    setupApp() {
+    async setupApp() {
+        // Initialize i18n first
+        await window.i18n.init(this.currentLang);
+        
         this.initializeComponents();
         this.bindGlobalEvents();
         this.setupInitialView();
@@ -105,18 +108,16 @@ class SimbaApp {
         // Set selected city in data viewer
         this.dataViewer.setSelectedCity(city);
         
-        // Update the title
+        // Load available periods for the city and auto-load the most recent data
+        this.dataViewer.loadAvailablePeriods().then(() => {
+            this.dataViewer.autoLoadRecentData();
+        });
+        
+        // Update the title with city name
         const titleElement = document.getElementById('selectedCityTitle');
         if (titleElement) {
-            const titleText = this.currentLang === 'pt' ? 'Dados de:' : 'Data from:';
-            titleElement.textContent = `${titleText} ${city}`;
+            titleElement.textContent = `${window.i18n.t('dataViewer.dataFrom')} ${city}`;
         }
-        
-        // Load available files for the city
-        this.dataViewer.loadAvailableFiles();
-        
-        // Update language elements
-        this.updateLanguageElements();
     }
 
     getCityFromPath(path) {
@@ -142,24 +143,22 @@ class SimbaApp {
         this.showDataViewer(city, true);
     }
 
-    toggleLanguage() {
-        this.currentLang = this.currentLang === 'pt' ? 'en' : 'pt';
+    async toggleLanguage() {
+        const newLang = this.currentLang === 'pt' ? 'en' : 'pt';
+        this.currentLang = newLang;
         
-        // Update language toggle button
-        const langToggle = document.getElementById('langToggle');
-        if (langToggle) {
-            langToggle.textContent = this.currentLang === 'pt' ? '🌐 EN' : '🌐 PT';
-        }
-        
-        // Update document language
-        document.documentElement.lang = this.currentLang === 'pt' ? 'pt-BR' : 'en';
+        // Use i18n service to change language
+        await window.i18n.setLanguage(newLang);
         
         // Update all components
         this.citySelection.setLanguage(this.currentLang);
         this.dataViewer.setLanguage(this.currentLang);
         
-        // Update language elements
-        this.updateLanguageElements();
+        // Update city title if we're in data viewer
+        const titleElement = document.getElementById('selectedCityTitle');
+        if (titleElement && this.dataViewer.selectedCity) {
+            titleElement.textContent = `${window.i18n.t('dataViewer.dataFrom')} ${this.dataViewer.selectedCity}`;
+        }
         
         // Refresh current data if loaded
         if (this.dataViewer.currentData) {
@@ -169,9 +168,6 @@ class SimbaApp {
         }
     }
 
-    updateLanguageElements() {
-        Utils.updateLanguageElements(this.currentLang);
-    }
 
     // Utility method to get current language
     getCurrentLanguage() {

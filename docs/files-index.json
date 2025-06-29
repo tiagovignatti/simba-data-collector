@@ -1,8 +1,23 @@
 {
   "files": [
+    "simba_Florianópolis_2021.json",
+    "simba_Florianópolis_2022.json",
+    "simba_Florianópolis_2023.json",
+    "simba_Florianópolis_2024.json",
+    "simba_Florianópolis_2025.json",
+    "simba_Penha_2021.json",
+    "simba_Penha_2022.json",
+    "simba_Penha_2023.json",
+    "simba_Penha_2024.json",
     "simba_Penha_2025-02-25_to_2024-01-01.json",
-    "simba_Penha_2025-02-25_to_2025-01-01.json"
+    "simba_Penha_2025-02-25_to_2025-01-01.json",
+    "simba_Penha_2025.json",
+    "simba_Porto Belo_2021.json",
+    "simba_Porto Belo_2022.json",
+    "simba_Porto Belo_2023.json",
+    "simba_Porto Belo_2024.json",
+    "simba_Porto Belo_2025.json"
   ],
-  "lastUpdated": "2025-06-28T22:40:47.376910",
-  "count": 2
+  "lastUpdated": "2025-06-28T23:18:06.599197",
+  "count": 17
 }

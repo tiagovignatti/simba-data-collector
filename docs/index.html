@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-pt="Resgate de Fauna Marinha" data-en="Marine Wildlife Rescue">Resgate de Fauna Marinha</title>
+    <title i18n-text="app.title">Resgate de Fauna Marinha</title>
     
     <!-- External CSS Dependencies -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -17,10 +17,10 @@
     <!-- Header Component -->
     <header>
         <div class="header-content">
-            <h1 data-pt="🐢 Resgate de Fauna Marinha" data-en="🐢 Marine Wildlife Rescue">🐢 Resgate de Fauna Marinha</h1>
+            <h1 i18n-text="app.title">🐢 Resgate de Fauna Marinha</h1>
         </div>
         <div class="language-toggle">
-            <button id="langToggle" title="Alterar idioma / Change language">🌐 EN</button>
+            <button id="langToggle" i18n-text="navigation.languageToggle" title="Change language">🌐 EN</button>
         </div>
     </header>
 
@@ -28,29 +28,29 @@
         <!-- City Selection Page -->
         <div id="citySelection" class="city-selection">
             <div class="city-selection-content">
-                <h2 data-pt="Selecione a Cidade de Interesse" data-en="Select City of Interest">Selecione a Cidade de Interesse</h2>
-                <p data-pt="Escolha uma cidade para visualizar os dados de resgate de fauna marinha" data-en="Choose a city to view marine wildlife rescue data">Escolha uma cidade para visualizar os dados de resgate de fauna marinha</p>
+                <h2 i18n-text="citySelection.title">Selecione a Cidade de Interesse</h2>
+                <p i18n-text="citySelection.subtitle">Escolha uma cidade para visualizar os dados de resgate de fauna marinha</p>
                 
                 <div class="city-grid">
                     <div class="city-card" data-city="Penha">
                         <div class="city-icon">🏖️</div>
                         <h3>Penha</h3>
                         <p>Santa Catarina</p>
-                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                        <button class="city-btn" i18n-text="citySelection.viewData">Visualizar Dados</button>
                     </div>
                     
                     <div class="city-card" data-city="Florianópolis">
                         <div class="city-icon">🏝️</div>
                         <h3>Florianópolis</h3>
                         <p>Santa Catarina</p>
-                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                        <button class="city-btn" i18n-text="citySelection.viewData">Visualizar Dados</button>
                     </div>
                     
                     <div class="city-card" data-city="Porto Belo">
                         <div class="city-icon">⛵</div>
                         <h3>Porto Belo</h3>
                         <p>Santa Catarina</p>
-                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                        <button class="city-btn" i18n-text="citySelection.viewData">Visualizar Dados</button>
                     </div>
                 </div>
             </div>
@@ -59,47 +59,46 @@
         <!-- Data Viewer Page -->
         <div id="dataViewer" class="data-viewer" style="display: none;">
             <div class="viewer-header">
-                <button id="backToSelection" class="back-btn" data-pt="← Voltar para Seleção de Cidade" data-en="← Back to City Selection">← Voltar para Seleção de Cidade</button>
-                <h3 id="selectedCityTitle" data-pt="Dados de:" data-en="Data from:">Dados de:</h3>
+                <button id="backToSelection" class="back-btn" i18n-text="navigation.backToSelection">← Voltar para Seleção de Cidade</button>
+                <h3 id="selectedCityTitle" i18n-text="dataViewer.dataFrom">Dados de:</h3>
             </div>
             
             <div class="controls">
-                <div class="file-selector">
-                    <label for="dataFile" data-pt="Selecionar Arquivo de Dados:" data-en="Select Data File:">Selecionar Arquivo de Dados:</label>
-                    <select id="dataFile">
-                        <option value="" data-pt="Escolha um arquivo de dados..." data-en="Choose a data file...">Escolha um arquivo de dados...</option>
+                <div class="period-selector">
+                    <label for="periodSelect" i18n-text="dataViewer.period">Período:</label>
+                    <select id="periodSelect">
+                        <option value="" i18n-text="dataViewer.loading">Carregando...</option>
                     </select>
-                    <button id="loadData" data-pt="Carregar Dados" data-en="Load Data">Carregar Dados</button>
                 </div>
                 
                 <div class="dataset-info" id="datasetInfo" style="display: none;">
                     <div class="info-grid">
                         <div class="info-item">
-                            <span class="label" data-pt="Município:" data-en="Municipality:">Município:</span>
+                            <span class="label" i18n-text="dataViewer.municipality">Município:</span>
                             <span id="infoMunicipality">-</span>
                         </div>
                         <div class="info-item">
-                            <span class="label" data-pt="Data Inicial:" data-en="Start Date:">Data Inicial:</span>
+                            <span class="label" i18n-text="dataViewer.startDate">Data Inicial:</span>
                             <span id="infoStartDate">-</span>
                         </div>
                         <div class="info-item">
-                            <span class="label" data-pt="Data Final:" data-en="End Date:">Data Final:</span>
+                            <span class="label" i18n-text="dataViewer.endDate">Data Final:</span>
                             <span id="infoEndDate">-</span>
                         </div>
                         <div class="info-item">
-                            <span class="label" data-pt="Total de Registros:" data-en="Total Records:">Total de Registros:</span>
+                            <span class="label" i18n-text="dataViewer.totalRecords">Total de Registros:</span>
                             <span id="infoTotalRecords">-</span>
                         </div>
                     </div>
                     
                     <div class="filter-section">
                         <div class="filter-group">
-                            <label for="localityFilter" data-pt="Filtrar por Localidade:" data-en="Filter by Locality:">Filtrar por Localidade:</label>
+                            <label for="localityFilter" i18n-text="dataViewer.filterByLocality">Filtrar por Localidade:</label>
                             <select id="localityFilter">
-                                <option value="" data-pt="Todas as Localidades" data-en="All Localities">Todas as Localidades</option>
+                                <option value="" i18n-text="dataViewer.allLocalities">Todas as Localidades</option>
                             </select>
                             <div id="localityCount" class="locality-count" style="display: none;">
-                                <span data-pt="Ocorrências nesta localidade:" data-en="Occurrences in this locality:">Ocorrências nesta localidade:</span>
+                                <span i18n-text="dataViewer.occurrencesInLocality">Ocorrências nesta localidade:</span>
                                 <strong id="localityCountNumber">0</strong>
                             </div>
                         </div>
@@ -111,18 +110,18 @@
                 <div class="map-container">
                     <div id="map"></div>
                     <div class="map-info">
-                        <div id="recordCount" data-pt="Nenhum dado carregado" data-en="No data loaded">Nenhum dado carregado</div>
+                        <div id="recordCount" i18n-text="dataViewer.noOccurrences">Nenhum dado carregado</div>
                     </div>
                 </div>
 
                 <div class="data-panel">
                     <div class="panel-header">
-                        <h3 data-pt="Registros de Ocorrência" data-en="Occurrence Records">Registros de Ocorrência</h3>
-                        <button id="exportBtn" data-pt="Exportar CSV" data-en="Export CSV">Exportar CSV</button>
+                        <h3 i18n-text="dataViewer.occurrenceRecords">Registros de Ocorrência</h3>
+                        <button id="exportBtn" i18n-text="dataViewer.exportCSV">Exportar CSV</button>
                     </div>
                     
                     <div id="occurrencesList" class="occurrences-list">
-                        <div class="no-data" data-pt="Carregue um arquivo de dados para visualizar as ocorrências" data-en="Load a data file to view occurrences">Carregue um arquivo de dados para visualizar as ocorrências</div>
+                        <div class="no-data" i18n-text="dataViewer.noOccurrences">Carregue um arquivo de dados para visualizar as ocorrências</div>
                     </div>
                 </div>
             </div>
@@ -138,14 +137,15 @@
 
     <!-- Footer Component -->
     <footer>
-        <p data-pt="Fonte de dados: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Sistema de Monitoramento Ambiental Petrobras</a>" data-en="Data source: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Petrobras Environmental Monitoring System</a>">Fonte de dados: <a href="https://simba.petrobras.com.br" target="_blank">SIMBA - Sistema de Monitoramento Ambiental Petrobras</a></p>
-        <p>Copyright © 2025 <a href="https://vignatti.com" target="_blank">Tiago Vignatti</a></p>
+        <p i18n-html="footer.dataSource">Fonte de dados: <a href="https://simba.petrobras.com.br" target="_blank">SIMBA - Sistema de Monitoramento Ambiental Petrobras</a></p>
+        <p i18n-html="footer.copyright">Copyright © 2025 <a href="https://vignatti.com" target="_blank">Tiago Vignatti</a></p>
     </footer>
 
     <!-- External JS Dependencies -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <!-- Modular JavaScript -->
+    <script src="js/i18n.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/city-selection.js"></script>
     <script src="js/data-viewer.js"></script>

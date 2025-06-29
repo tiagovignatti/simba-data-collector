@@ -18,11 +18,18 @@ def update_files_index():
     
     # Directories
     output_dir = os.path.join(project_root, "output")
+    data_dir = os.path.join(project_root, "data")
     docs_dir = os.path.join(project_root, "docs")
     
-    # Find all JSON files in output directory
+    # Ensure data directory exists
+    os.makedirs(data_dir, exist_ok=True)
+    
+    # Find all JSON files in output and data directories
     output_pattern = os.path.join(output_dir, "*.json")
     output_files = glob.glob(output_pattern)
+    
+    data_pattern = os.path.join(data_dir, "*.json")
+    data_files = glob.glob(data_pattern)
     
     # Also find JSON files already in docs directory (excluding the index file)
     docs_pattern = os.path.join(docs_dir, "*.json")
@@ -30,7 +37,7 @@ def update_files_index():
     docs_files = [f for f in docs_files if not f.endswith('files-index.json')]
     
     # Combine and deduplicate filenames
-    all_files = output_files + docs_files
+    all_files = output_files + data_files + docs_files
     filenames = list(set([os.path.basename(f) for f in all_files]))
     filenames.sort()  # Sort alphabetically
     
@@ -53,14 +60,21 @@ def update_files_index():
     
     # Also copy the files to docs directory for the web viewer
     print("\nCopying files to docs directory...")
+    import shutil
+    
+    # Copy from output directory
     for json_file in output_files:
         filename = os.path.basename(json_file)
         dest_path = os.path.join(docs_dir, filename)
-        
-        # Copy file
-        import shutil
         shutil.copy2(json_file, dest_path)
-        print(f"  Copied: {filename}")
+        print(f"  Copied from output/: {filename}")
+    
+    # Copy from data directory  
+    for json_file in data_files:
+        filename = os.path.basename(json_file)
+        dest_path = os.path.join(docs_dir, filename)
+        shutil.copy2(json_file, dest_path)
+        print(f"  Copied from data/: {filename}")
     
     print(f"\nFiles index updated: {index_file}")
 
