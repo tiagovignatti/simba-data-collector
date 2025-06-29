@@ -1,135 +1,88 @@
-class SimbaViewer {
+// Data Viewer Page Logic
+
+class DataViewer {
     constructor() {
         this.map = null;
         this.markers = [];
         this.currentData = null;
         this.filteredData = [];
-        this.currentLang = 'pt';
         this.selectedCity = null;
-        this.translations = {
-            pt: {
-                noDataLoaded: 'Nenhum dado carregado',
-                showingRecords: 'Mostrando {count} ocorrências',
-                noOccurrences: 'Nenhuma ocorrência encontrada',
-                unknownSpecies: 'Espécie Desconhecida',
-                unknownLocation: 'Local Desconhecido',
-                unknown: 'Desconhecido',
-                recordedBy: 'Registrado por:',
-                date: 'Data:',
-                location: 'Local:',
-                lifeStage: 'Estágio de Vida:',
-                habitat: 'Habitat:',
-                loadError: 'Falha ao carregar arquivo de dados:',
-                selectFile: 'Por favor selecione um arquivo de dados',
-                noDataExport: 'Nenhum dado para exportar'
-            },
-            en: {
-                noDataLoaded: 'No data loaded',
-                showingRecords: 'Showing {count} occurrences',
-                noOccurrences: 'No occurrences found',
-                unknownSpecies: 'Unknown Species',
-                unknownLocation: 'Unknown Location',
-                unknown: 'Unknown',
-                recordedBy: 'Recorded by:',
-                date: 'Date:',
-                location: 'Location:',
-                lifeStage: 'Life Stage:',
-                habitat: 'Habitat:',
-                loadError: 'Failed to load data file:',
-                selectFile: 'Please select a data file',
-                noDataExport: 'No data to export'
-            }
-        };
-        
+        this.currentLang = 'pt';
         this.init();
     }
 
     init() {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.setupComponents();
-            });
-        } else {
-            this.setupComponents();
-        }
-    }
-
-    setupComponents() {
+        // Initialize map when the data viewer is shown
         this.initMap();
         this.bindEvents();
-        // Add a small delay to ensure everything is ready
-        setTimeout(() => {
-            this.loadAvailableFiles();
-        }, 100);
     }
 
     initMap() {
-        this.map = L.map('map').setView([-26.78, -48.63], 10);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(this.map);
+        // Only initialize if map container exists and map hasn't been created
+        const mapContainer = document.getElementById('map');
+        if (mapContainer && !this.map) {
+            this.map = L.map('map').setView([-26.78, -48.63], 10);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(this.map);
+        }
     }
 
     bindEvents() {
-        document.getElementById('loadData').addEventListener('click', () => this.loadSelectedFile());
-        document.getElementById('exportBtn').addEventListener('click', () => this.exportCSV());
-        document.getElementById('langToggle').addEventListener('click', () => this.toggleLanguage());
-        document.getElementById('localityFilter').addEventListener('change', () => this.applyLocalityFilter());
-        
-        // City selection events
-        document.querySelectorAll('.city-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const cityCard = e.target.closest('.city-card');
-                const city = cityCard.getAttribute('data-city');
-                this.selectCity(city);
-            });
-        });
-        
+        // Data viewer specific events
+        const loadDataBtn = document.getElementById('loadData');
+        if (loadDataBtn) {
+            loadDataBtn.addEventListener('click', () => this.loadSelectedFile());
+        }
+
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportCSV());
+        }
+
+        const localityFilter = document.getElementById('localityFilter');
+        if (localityFilter) {
+            localityFilter.addEventListener('change', () => this.applyLocalityFilter());
+        }
+
         // Back button
-        document.getElementById('backToSelection').addEventListener('click', () => this.showCitySelection());
-        
+        const backBtn = document.getElementById('backToSelection');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => this.goBackToSelection());
+        }
+
+        // Modal events
         const modal = document.getElementById('detailModal');
         const closeBtn = document.querySelector('.close');
-        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        }
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
     }
 
-    selectCity(city) {
+    setSelectedCity(city) {
         this.selectedCity = city;
-        console.log('Selected city:', city);
-        
-        // Update the title to show selected city
-        const titleElement = document.getElementById('selectedCityTitle');
-        const titleText = this.currentLang === 'pt' ? 'Dados de:' : 'Data from:';
-        titleElement.textContent = `${titleText} ${city}`;
-        
-        // Hide city selection and show data viewer
-        document.getElementById('citySelection').style.display = 'none';
-        document.getElementById('dataViewer').style.display = 'block';
-        
-        // Load files filtered by selected city
-        this.loadAvailableFiles();
     }
-    
-    showCitySelection() {
-        // Show city selection and hide data viewer
-        document.getElementById('citySelection').style.display = 'block';
-        document.getElementById('dataViewer').style.display = 'none';
-        
-        // Reset selected city
-        this.selectedCity = null;
-        
-        // Clear any loaded data
+
+    setLanguage(lang) {
+        this.currentLang = lang;
+    }
+
+    goBackToSelection() {
+        // Clear data and reset state
         this.currentData = null;
         this.filteredData = [];
+        this.selectedCity = null;
         
-        // Clear map markers if map exists
-        if (this.map) {
-            this.clearMarkers();
+        // Clear map markers
+        this.clearMarkers();
+        
+        // Navigate back to city selection using main app routing
+        if (window.simbaApp) {
+            window.simbaApp.showCitySelection();
         }
     }
 
@@ -182,7 +135,7 @@ class SimbaViewer {
     
     async loadFilesFromIndex() {
         try {
-            const response = await fetch('files-index.json');
+            const response = await fetch('/files-index.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -223,7 +176,7 @@ class SimbaViewer {
         // Try to fetch each potential file
         const fetchPromises = patterns.map(async (filename) => {
             try {
-                const response = await fetch(filename, { method: 'HEAD' });
+                const response = await fetch(`/${filename}`, { method: 'HEAD' });
                 if (response.ok) {
                     return filename;
                 }
@@ -253,12 +206,12 @@ class SimbaViewer {
         const selectedFile = fileSelect.value;
         
         if (!selectedFile) {
-            alert(this.t('selectFile'));
+            alert(Utils.t('selectFile', this.currentLang));
             return;
         }
 
         try {
-            const response = await fetch(selectedFile);
+            const response = await fetch(`/${selectedFile}`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             this.currentData = await response.json();
@@ -270,7 +223,7 @@ class SimbaViewer {
             
         } catch (error) {
             console.error('Error loading data:', error);
-            alert(`${this.t('loadError')} ${error.message}`);
+            alert(`${Utils.t('loadError', this.currentLang)} ${error.message}`);
         }
     }
 
@@ -278,31 +231,27 @@ class SimbaViewer {
         if (!this.currentData) return;
         
         const infoDiv = document.getElementById('datasetInfo');
-        const municipality = this.currentData.filters?.municipality || this.t('unknown');
-        const startDate = this.currentData.filters?.start_date || this.t('unknown');
+        const municipality = this.currentData.filters?.municipality || Utils.t('unknown', this.currentLang);
+        const startDate = this.currentData.filters?.start_date || Utils.t('unknown', this.currentLang);
         const totalRecords = this.currentData.count || 0;
         
-        document.getElementById('infoMunicipality').textContent = municipality;
-        document.getElementById('infoStartDate').textContent = startDate;
-        document.getElementById('infoEndDate').textContent = this.calculateEndDate();
-        document.getElementById('infoTotalRecords').textContent = totalRecords;
+        const municipalityEl = document.getElementById('infoMunicipality');
+        const startDateEl = document.getElementById('infoStartDate');
+        const endDateEl = document.getElementById('infoEndDate');
+        const totalRecordsEl = document.getElementById('infoTotalRecords');
+        
+        if (municipalityEl) municipalityEl.textContent = municipality;
+        if (startDateEl) startDateEl.textContent = startDate;
+        if (endDateEl) endDateEl.textContent = this.calculateEndDate();
+        if (totalRecordsEl) totalRecordsEl.textContent = totalRecords;
         
         this.populateLocalityFilter();
-        infoDiv.style.display = 'block';
-    }
-
-    parseDate(dateString) {
-        if (!dateString) return null;
-        try {
-            return new Date(dateString);
-        } catch {
-            return null;
-        }
+        if (infoDiv) infoDiv.style.display = 'block';
     }
 
     calculateEndDate() {
         if (!this.currentData || !this.currentData.records.length) {
-            return this.t("unknown");
+            return Utils.t("unknown", this.currentLang);
         }
         
         const dates = this.currentData.records
@@ -318,12 +267,13 @@ class SimbaViewer {
             .filter(date => date && !isNaN(date.getTime()));
         
         if (dates.length === 0) {
-            return this.t("unknown");
+            return Utils.t("unknown", this.currentLang);
         }
         
         const latestDate = new Date(Math.max(...dates));
         return latestDate.toLocaleDateString("pt-BR");
     }
+
     displayData() {
         this.clearMarkers();
         this.displayOccurrencesList();
@@ -331,11 +281,15 @@ class SimbaViewer {
     }
 
     clearMarkers() {
-        this.markers.forEach(marker => this.map.removeLayer(marker));
+        if (this.map) {
+            this.markers.forEach(marker => this.map.removeLayer(marker));
+        }
         this.markers = [];
     }
 
     addMarkersToMap() {
+        if (!this.map) return;
+        
         const bounds = [];
         
         this.filteredData.forEach((record, index) => {
@@ -361,39 +315,40 @@ class SimbaViewer {
     createMarkerPopup(record) {
         return `
             <div class="marker-popup">
-                <strong>${record.scientificName || this.t('unknownSpecies')}</strong><br>
-                <em>${record.municipality || this.t('unknownLocation')}</em><br>
-                ${this.t('date')}: ${this.formatDate(record.eventDate)}<br>
-                ${this.t('recordedBy')}: ${record.recordedBy || this.t('unknown')}
+                <strong>${record.scientificName || Utils.t('unknownSpecies', this.currentLang)}</strong><br>
+                <em>${record.municipality || Utils.t('unknownLocation', this.currentLang)}</em><br>
+                ${Utils.t('date', this.currentLang)}: ${Utils.formatDate(record.eventDate)}<br>
+                ${Utils.t('recordedBy', this.currentLang)}: ${record.recordedBy || Utils.t('unknown', this.currentLang)}
             </div>
         `;
     }
 
     displayOccurrencesList() {
         const container = document.getElementById('occurrencesList');
+        if (!container) return;
         
         if (this.filteredData.length === 0) {
-            container.innerHTML = `<div class="no-data">${this.t('noOccurrences')}</div>`;
+            container.innerHTML = `<div class="no-data">${Utils.t('noOccurrences', this.currentLang)}</div>`;
             return;
         }
 
         const html = this.filteredData.map((record, index) => {
-            const media = this.parseMedia(record);
+            const media = Utils.parseMedia(record);
             const thumbnails = media.slice(0, 3).map(url => 
                 `<img src="${url}" class="media-thumbnail" alt="Foto" onerror="this.style.display='none'" loading="lazy" onclick="window.open('${url}', '_blank')">`
             ).join('');
             
             return `
-            <div class="occurrence-item" onclick="viewer.showDetailModal(${index})">
+            <div class="occurrence-item" onclick="window.dataViewer.showDetailModal(${index})">
                 <div class="occurrence-header">
-                    <div class="species-name">${record.scientificName || this.t('unknownSpecies')}</div>
-                    <div class="record-date">${this.formatDate(record.eventDate)}</div>
+                    <div class="species-name">${record.scientificName || Utils.t('unknownSpecies', this.currentLang)}</div>
+                    <div class="record-date">${Utils.formatDate(record.eventDate)}</div>
                 </div>
                 <div class="occurrence-details">
-                    <div><strong>${this.t('location')}:</strong> ${record.municipality || this.t('unknown')}, ${record.stateProvince || this.t('unknown')}</div>
-                    <div><strong>${this.t('recordedBy')}:</strong> ${record.recordedBy || this.t('unknown')}</div>
-                    <div><strong>${this.t('lifeStage')}:</strong> ${record.lifeStage || this.t('unknown')}</div>
-                    <div><strong>${this.t('habitat')}:</strong> ${record.habitat || this.t('unknown')}</div>
+                    <div><strong>${Utils.t('location', this.currentLang)}:</strong> ${record.municipality || Utils.t('unknown', this.currentLang)}, ${record.stateProvince || Utils.t('unknown', this.currentLang)}</div>
+                    <div><strong>${Utils.t('recordedBy', this.currentLang)}:</strong> ${record.recordedBy || Utils.t('unknown', this.currentLang)}</div>
+                    <div><strong>${Utils.t('lifeStage', this.currentLang)}:</strong> ${record.lifeStage || Utils.t('unknown', this.currentLang)}</div>
+                    <div><strong>${Utils.t('habitat', this.currentLang)}:</strong> ${record.habitat || Utils.t('unknown', this.currentLang)}</div>
                     ${thumbnails ? `<div class="media-thumbnails">${thumbnails}</div>` : ''}
                 </div>
             </div>
@@ -408,13 +363,17 @@ class SimbaViewer {
         const modal = document.getElementById('detailModal');
         const content = document.getElementById('detailContent');
         
-        content.innerHTML = this.createDetailContent(record);
-        modal.style.display = 'block';
+        if (content) {
+            content.innerHTML = this.createDetailContent(record);
+        }
+        if (modal) {
+            modal.style.display = 'block';
+        }
     }
 
     createDetailContent(record) {
-        const measurements = this.parseMeasurements(record);
-        const media = this.parseMedia(record);
+        const measurements = Utils.parseMeasurements(record);
+        const media = Utils.parseMedia(record);
         
         return `
             <h3>${record.scientificName || 'Unknown Species'}</h3>
@@ -423,7 +382,7 @@ class SimbaViewer {
                 <h4>Basic Information</h4>
                 <div class="detail-grid">
                     <div class="detail-item"><strong>Record ID:</strong> ${record.recordNumber || 'N/A'}</div>
-                    <div class="detail-item"><strong>Event Date:</strong> ${this.formatDate(record.eventDate)}</div>
+                    <div class="detail-item"><strong>Event Date:</strong> ${Utils.formatDate(record.eventDate)}</div>
                     <div class="detail-item"><strong>Recorded By:</strong> ${record.recordedBy || 'N/A'}</div>
                     <div class="detail-item"><strong>Life Stage:</strong> ${record.lifeStage || 'N/A'}</div>
                     <div class="detail-item"><strong>Sex:</strong> ${record.sex || 'N/A'}</div>
@@ -481,97 +440,23 @@ class SimbaViewer {
         `;
     }
 
-    parseMeasurements(record) {
-        const measurements = [];
-        if (record.measurementType && record.measurementValue) {
-            try {
-                const types = JSON.parse(record.measurementType.replace(/"/g, '"'));
-                const values = JSON.parse(record.measurementValue.replace(/"/g, '"'));
-                
-                if (Array.isArray(types) && Array.isArray(values)) {
-                    for (let i = 0; i < Math.min(types.length, values.length); i++) {
-                        if (values[i] && values[i].trim() !== '') {
-                            measurements.push({
-                                type: types[i],
-                                value: values[i],
-                                unit: record.measurementUnit || ''
-                            });
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Error parsing measurements:', e);
-            }
-        }
-        return measurements;
-    }
-
-    parseMedia(record) {
-        if (!record.associatedMedia) return [];
-        return record.associatedMedia.split(',').map(url => url.trim()).filter(url => url);
-    }
-
-    formatDate(dateString) {
-        if (!dateString) return 'N/A';
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        } catch {
-            return dateString;
-        }
-    }
-
     updateRecordCount() {
         const count = this.filteredData.length;
-        const total = this.currentData ? this.currentData.count : 0;
-        document.getElementById('recordCount').textContent = 
-            this.t('showingRecords').replace('{count}', count);
+        const recordCountEl = document.getElementById('recordCount');
+        if (recordCountEl) {
+            recordCountEl.textContent = Utils.t('showingRecords', this.currentLang).replace('{count}', count);
+        }
     }
 
     exportCSV() {
         if (!this.filteredData.length) {
-            alert(this.t('noDataExport'));
+            alert(Utils.t('noDataExport', this.currentLang));
             return;
         }
 
-        const headers = [
-            'Record Number', 'Scientific Name', 'Event Date', 'Municipality', 
-            'State Province', 'Latitude', 'Longitude', 'Recorded By', 
-            'Life Stage', 'Sex', 'Habitat', 'Individual Count'
-        ];
-
-        const csvContent = [
-            headers.join(','),
-            ...this.filteredData.map(record => [
-                record.recordNumber || '',
-                record.scientificName || '',
-                record.eventDate || '',
-                record.municipality || '',
-                record.stateProvince || '',
-                record.decimalLatitude || '',
-                record.decimalLongitude || '',
-                record.recordedBy || '',
-                record.lifeStage || '',
-                record.sex || '',
-                record.habitat || '',
-                record.individualCount || ''
-            ].map(field => `"${field}"`).join(","))
-        ].join('\n');
-
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `simba_occurrences_${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+        const csvContent = Utils.generateCSVContent(this.filteredData);
+        const filename = `simba_occurrences_${new Date().toISOString().split('T')[0]}.csv`;
+        Utils.downloadFile(csvContent, filename);
     }
 
     populateLocalityFilter() {
@@ -609,7 +494,7 @@ class SimbaViewer {
         if (selectedLocality === "") {
             // Show all records
             this.filteredData = [...this.currentData.records];
-            localityCountDiv.style.display = "none";
+            if (localityCountDiv) localityCountDiv.style.display = "none";
         } else {
             // Filter by selected locality
             this.filteredData = this.currentData.records.filter(record => 
@@ -617,8 +502,8 @@ class SimbaViewer {
             );
             
             // Show locality count
-            localityCountNumber.textContent = this.filteredData.length;
-            localityCountDiv.style.display = "block";
+            if (localityCountNumber) localityCountNumber.textContent = this.filteredData.length;
+            if (localityCountDiv) localityCountDiv.style.display = "block";
         }
         
         this.displayData();
@@ -626,45 +511,5 @@ class SimbaViewer {
     }
 }
 
-// Initialize when DOM is ready
-let viewer;
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        viewer = new SimbaViewer();
-    });
-} else {
-    viewer = new SimbaViewer();
-}
-
-// Add missing methods to the class
-SimbaViewer.prototype.t = function(key) {
-    return this.translations[this.currentLang][key] || key;
-};
-
-SimbaViewer.prototype.toggleLanguage = function() {
-    this.currentLang = this.currentLang === 'pt' ? 'en' : 'pt';
-    document.getElementById('langToggle').textContent = this.currentLang === 'pt' ? '🌐 EN' : '🌐 PT';
-    document.documentElement.lang = this.currentLang === 'pt' ? 'pt-BR' : 'en';
-    
-    this.updateLanguageElements();
-    
-    if (this.currentData) {
-        this.displayDatasetInfo();
-        this.displayOccurrencesList();
-        this.updateRecordCount();
-    }
-};
-
-SimbaViewer.prototype.updateLanguageElements = function() {
-    const elements = document.querySelectorAll('[data-pt][data-en]');
-    elements.forEach(element => {
-        const text = element.getAttribute(`data-${this.currentLang}`);
-        if (text) {
-            if (element.tagName === 'TITLE') {
-                element.textContent = text;
-            } else {
-                element.innerHTML = text;
-            }
-        }
-    });
-};
+// Export for use in main app
+window.DataViewer = DataViewer;

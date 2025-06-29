@@ -1,0 +1,78 @@
+<!-- Main Data Viewer (initially hidden) -->
+<div id="dataViewer" class="data-viewer" style="display: none;">
+    <div class="viewer-header">
+        <button id="backToSelection" class="back-btn" data-pt="← Voltar para Seleção de Cidade" data-en="← Back to City Selection">← Voltar para Seleção de Cidade</button>
+        <h3 id="selectedCityTitle" data-pt="Dados de:" data-en="Data from:">Dados de:</h3>
+    </div>
+    
+    <div class="controls">
+        <div class="file-selector">
+            <label for="dataFile" data-pt="Selecionar Arquivo de Dados:" data-en="Select Data File:">Selecionar Arquivo de Dados:</label>
+            <select id="dataFile">
+                <option value="" data-pt="Escolha um arquivo de dados..." data-en="Choose a data file...">Escolha um arquivo de dados...</option>
+            </select>
+            <button id="loadData" data-pt="Carregar Dados" data-en="Load Data">Carregar Dados</button>
+        </div>
+        
+        <div class="dataset-info" id="datasetInfo" style="display: none;">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label" data-pt="Município:" data-en="Municipality:">Município:</span>
+                    <span id="infoMunicipality">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="label" data-pt="Data Inicial:" data-en="Start Date:">Data Inicial:</span>
+                    <span id="infoStartDate">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="label" data-pt="Data Final:" data-en="End Date:">Data Final:</span>
+                    <span id="infoEndDate">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="label" data-pt="Total de Registros:" data-en="Total Records:">Total de Registros:</span>
+                    <span id="infoTotalRecords">-</span>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="localityFilter" data-pt="Filtrar por Localidade:" data-en="Filter by Locality:">Filtrar por Localidade:</label>
+                    <select id="localityFilter">
+                        <option value="" data-pt="Todas as Localidades" data-en="All Localities">Todas as Localidades</option>
+                    </select>
+                    <div id="localityCount" class="locality-count" style="display: none;">
+                        <span data-pt="Ocorrências nesta localidade:" data-en="Occurrences in this locality:">Ocorrências nesta localidade:</span>
+                        <strong id="localityCountNumber">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-info">
+                <div id="recordCount" data-pt="Nenhum dado carregado" data-en="No data loaded">Nenhum dado carregado</div>
+            </div>
+        </div>
+
+        <div class="data-panel">
+            <div class="panel-header">
+                <h3 data-pt="Registros de Ocorrência" data-en="Occurrence Records">Registros de Ocorrência</h3>
+                <button id="exportBtn" data-pt="Exportar CSV" data-en="Export CSV">Exportar CSV</button>
+            </div>
+            
+            <div id="occurrencesList" class="occurrences-list">
+                <div class="no-data" data-pt="Carregue um arquivo de dados para visualizar as ocorrências" data-en="Load a data file to view occurrences">Carregue um arquivo de dados para visualizar as ocorrências</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+</div>

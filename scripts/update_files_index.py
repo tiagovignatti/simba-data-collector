@@ -10,7 +10,7 @@ import glob
 from datetime import datetime
 
 def update_files_index():
-    """Update the files-index.json in public/ directory with available JSON files."""
+    """Update the files-index.json in docs/ directory with available JSON files."""
     
     # Get the project root directory
     script_dir = os.path.dirname(__file__)
@@ -18,19 +18,19 @@ def update_files_index():
     
     # Directories
     output_dir = os.path.join(project_root, "output")
-    public_dir = os.path.join(project_root, "public")
+    docs_dir = os.path.join(project_root, "docs")
     
     # Find all JSON files in output directory
     output_pattern = os.path.join(output_dir, "*.json")
     output_files = glob.glob(output_pattern)
     
-    # Also find JSON files already in public directory (excluding the index file)
-    public_pattern = os.path.join(public_dir, "*.json")
-    public_files = glob.glob(public_pattern)
-    public_files = [f for f in public_files if not f.endswith('files-index.json')]
+    # Also find JSON files already in docs directory (excluding the index file)
+    docs_pattern = os.path.join(docs_dir, "*.json")
+    docs_files = glob.glob(docs_pattern)
+    docs_files = [f for f in docs_files if not f.endswith('files-index.json')]
     
     # Combine and deduplicate filenames
-    all_files = output_files + public_files
+    all_files = output_files + docs_files
     filenames = list(set([os.path.basename(f) for f in all_files]))
     filenames.sort()  # Sort alphabetically
     
@@ -41,8 +41,8 @@ def update_files_index():
         "count": len(filenames)
     }
     
-    # Write to public directory
-    index_file = os.path.join(public_dir, "files-index.json")
+    # Write to docs directory
+    index_file = os.path.join(docs_dir, "files-index.json")
     
     with open(index_file, 'w', encoding='utf-8') as f:
         json.dump(index_data, f, indent=2, ensure_ascii=False)
@@ -51,11 +51,11 @@ def update_files_index():
     for filename in filenames:
         print(f"  - {filename}")
     
-    # Also copy the files to public directory for the web viewer
-    print("\nCopying files to public directory...")
+    # Also copy the files to docs directory for the web viewer
+    print("\nCopying files to docs directory...")
     for json_file in output_files:
         filename = os.path.basename(json_file)
-        dest_path = os.path.join(public_dir, filename)
+        dest_path = os.path.join(docs_dir, filename)
         
         # Copy file
         import shutil

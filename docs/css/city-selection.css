@@ -1,0 +1,108 @@
+/* City Selection Landing Page */
+.city-selection {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.city-selection-content {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.city-selection h2 {
+    font-size: 2.5rem;
+    color: #2c5530;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.city-selection p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.city-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.city-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.city-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(74, 124, 89, 0.2);
+    border-color: #4a7c59;
+}
+
+.city-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.city-card h3 {
+    font-size: 1.8rem;
+    color: #2c5530;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.city-card p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+.city-btn {
+    background: linear-gradient(135deg, #4a7c59, #2c5530);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+.city-btn:hover {
+    background: linear-gradient(135deg, #2c5530, #1a3520);
+    transform: scale(1.05);
+}
+
+/* Responsive Design for City Selection */
+@media (max-width: 768px) {
+    .city-selection h2 {
+        font-size: 2rem;
+    }
+    
+    .city-selection p {
+        font-size: 1rem;
+    }
+    
+    .city-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .city-card {
+        padding: 1.5rem;
+    }
+}
