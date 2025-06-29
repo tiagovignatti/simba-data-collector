@@ -21,7 +21,10 @@ class I18nService {
 
     async loadLanguage(language) {
         try {
-            const response = await fetch(`/assets/i18n/${language}.json`);
+            const basePath = this.getBasePath();
+            const url = `${basePath}assets/i18n/${language}.json`;
+            console.log(`Loading translations from: ${url}`);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Failed to load ${language} translations`);
             }
@@ -182,6 +185,16 @@ class I18nService {
     formatNumber(number) {
         const locale = this.currentLanguage === 'pt' ? 'pt-BR' : 'en-US';
         return new Intl.NumberFormat(locale).format(number);
+    }
+
+    // Get base path for GitHub Pages deployment
+    getBasePath() {
+        // For GitHub Pages, extract repo name from pathname, for local dev return /
+        if (window.location.hostname.includes('github.io')) {
+            const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+            return pathSegments.length > 0 ? `/${pathSegments[0]}/` : '/';
+        }
+        return '/';
     }
 }
 
