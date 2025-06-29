@@ -4,11 +4,11 @@
   "description": "Interactive web viewer for marine wildlife rescue data from SIMBA project",
   "main": "docs/index.html",
   "scripts": {
-    "dev": "cd docs && python -m http.server 8082",
-    "build": "python scripts/build.py",
+    "dev": "cd docs && python3 -m http.server 8082",
+    "build": "python3 scripts/build.py",
     "start": "npm run build && npm run dev",
     "clean": "rm -rf docs/*",
-    "update-data": "python scripts/update_files_index.py",
+    "update-data": "python3 scripts/update_files_index.py",
     "serve": "npm run dev",
     "deploy": "npm run build && git add . && git commit -m 'Build for deployment' && git push"
   },
