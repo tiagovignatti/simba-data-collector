@@ -131,11 +131,7 @@ class SimbaApp {
             const citySlug = match[1];
             // Convert URL slug back to city name
             const cityMap = {
-                'penha': 'Penha',
-                'florianopolis': 'Florianópolis', 
-                'florianópolis': 'Florianópolis',
-                'porto-belo': 'Porto Belo',
-                'portobelo': 'Porto Belo'
+                'penha': 'Penha'
             };
             return cityMap[citySlug.toLowerCase()] || null;
         }

@@ -156,22 +156,36 @@ class DataViewer {
     async extractPeriodsFromFiles(files) {
         const periodMap = new Map();
         
-        // Load file metadata to get actual date ranges
+        // Filter files to prefer clean year files over date-range files
         for (const filename of files) {
-            const yearMatch = filename.match(/(\d{4})/);
-            if (yearMatch) {
-                const year = yearMatch[1];
-                
-                if (!periodMap.has(year)) {
-                    periodMap.set(year, {
-                        year: year,
-                        displayName: year,
-                        files: [],
-                        dateRange: null
-                    });
+            // Look for simple year pattern like "simba_Penha_2025.json"
+            const cleanYearMatch = filename.match(/simba_.*_(\d{4})\.json$/);
+            if (cleanYearMatch) {
+                const year = cleanYearMatch[1];
+                periodMap.set(year, {
+                    year: year,
+                    displayName: year,
+                    files: [filename], // Use only the clean year file
+                    dateRange: null
+                });
+            }
+        }
+        
+        // If no clean year files found, fall back to any year pattern
+        if (periodMap.size === 0) {
+            for (const filename of files) {
+                const yearMatch = filename.match(/(\d{4})/);
+                if (yearMatch) {
+                    const year = yearMatch[1];
+                    if (!periodMap.has(year)) {
+                        periodMap.set(year, {
+                            year: year,
+                            displayName: year,
+                            files: [filename],
+                            dateRange: null
+                        });
+                    }
                 }
-                
-                periodMap.get(year).files.push(filename);
             }
         }
         
@@ -202,7 +216,8 @@ class DataViewer {
         
         if (fileToCheck) {
             try {
-                const response = await fetch(`/${fileToCheck}`);
+                const basePath = this.getBasePath();
+                const response = await fetch(`${basePath}${fileToCheck}`);
                 if (response.ok) {
                     const data = await response.json();
                     
@@ -234,35 +249,14 @@ class DataViewer {
     }
 
     formatPeriodDisplay(year, dateRange) {
-        const currentLang = this.currentLang || 'pt';
-        
-        if (!dateRange || !dateRange.startDate || !dateRange.endDate) {
-            return year; // Fallback to just year
-        }
-        
-        const startDate = dateRange.startDate;
-        const endDate = dateRange.endDate;
-        const currentYear = new Date().getFullYear();
-        
-        // Format dates according to language
-        const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
-        const options = { month: 'short', day: 'numeric' };
-        
-        if (parseInt(year) === currentYear) {
-            // For current year, show "2025: Jan 1 - Jun 28" (up to latest occurrence)
-            const startFormatted = startDate.toLocaleDateString(locale, options);
-            const endFormatted = endDate.toLocaleDateString(locale, options);
-            return `${year}: ${startFormatted} - ${endFormatted}`;
-        } else {
-            // For past years, show "2024: Ano completo" or "2024: Full year"
-            const fullYearText = currentLang === 'pt' ? 'Ano completo' : 'Full year';
-            return `${year}: ${fullYearText}`;
-        }
+        // Simply return the year - clean and simple
+        return year;
     }
     
     async loadFilesFromIndex() {
         try {
-            const response = await fetch('/files-index.json');
+            const basePath = this.getBasePath();
+            const response = await fetch(`${basePath}files-index.json`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -293,17 +287,20 @@ class DataViewer {
         
         // Get list of files currently in public directory by trying to fetch them
         const patterns = [
+            'simba_Penha_2021.json',
+            'simba_Penha_2022.json',
+            'simba_Penha_2023.json',
+            'simba_Penha_2024.json',
+            'simba_Penha_2025.json',
             'simba_Penha_2025-02-25_to_2024-01-01.json',
-            'simba_Penha_2025-02-25_to_2025-01-01.json',
-            'simba_Penha_2024-06-01_to_2025-02-25.json',
-            'simba_data_20250628_161619.json',
-            'simba_data_20250628_162044.json'
+            'simba_Penha_2025-02-25_to_2025-01-01.json'
         ];
         
         // Try to fetch each potential file
         const fetchPromises = patterns.map(async (filename) => {
             try {
-                const response = await fetch(`/${filename}`, { method: 'HEAD' });
+                const basePath = this.getBasePath();
+                const response = await fetch(`${basePath}${filename}`, { method: 'HEAD' });
                 if (response.ok) {
                     return filename;
                 }
@@ -673,7 +670,8 @@ class DataViewer {
 
     async loadFileByName(filename) {
         try {
-            const response = await fetch(`/${filename}`);
+            const basePath = this.getBasePath();
+            const response = await fetch(`${basePath}${filename}`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             this.currentData = await response.json();
@@ -689,6 +687,16 @@ class DataViewer {
             console.error('Error loading data file:', error);
             // Don't show alert for auto-loading, just log the error
         }
+    }
+
+    // Get base path for GitHub Pages deployment
+    getBasePath() {
+        // For GitHub Pages, extract repo name from pathname, for local dev return /
+        if (window.location.hostname.includes('github.io')) {
+            const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+            return pathSegments.length > 0 ? `/${pathSegments[0]}/` : '/';
+        }
+        return '/';
     }
 }
 
