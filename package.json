@@ -1,7 +1,7 @@
 {
-  "name": "simba-data-collector",
+  "name": "marine-rescue-viewer",
   "version": "1.0.0",
-  "description": "Interactive web viewer for marine wildlife rescue data from SIMBA project",
+  "description": "Interactive web viewer for marine wildlife rescue in Brazil",
   "main": "docs/index.html",
   "scripts": {
     "dev": "echo '🚀 Starting development server at http://localhost:8082' && lsof -ti:8082 | xargs kill -9 2>/dev/null || true && cd docs && python3 -m http.server 8082 --bind 127.0.0.1",
@@ -10,13 +10,11 @@
     "clean": "rm -rf docs/*",
     "update-data": "python3 scripts/update_files_index.py",
     "collect-all": "python3 scripts/collect_all_data.py",
-    "collect-and-build": "npm run collect-all && npm run update-data && npm run build",
-    "serve": "npm run dev",
-    "deploy": "npm run build && git add . && git commit -m 'Build for deployment' && git push"
+    "collect-and-build": "npm run collect-all && npm run update-data && npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tiagovignatti/simba-data-collector.git"
+    "url": "git+https://github.com/tiagovignatti/marine-rescue-viewer.git"
   },
   "keywords": [
     "marine-biology",
@@ -29,9 +27,9 @@
   "author": "Tiago Vignatti <tiago@vignatti.com> (https://vignatti.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tiagovignatti/simba-data-collector/issues"
+    "url": "https://github.com/tiagovignatti/marine-rescue-viewer/issues"
   },
-  "homepage": "https://tiagovignatti.github.io/simba-data-collector/",
+  "homepage": "https://tiagovignatti.github.io/marine-rescue-viewer/",
   "devDependencies": {},
   "dependencies": {}
 }

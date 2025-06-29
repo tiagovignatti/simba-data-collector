@@ -89,7 +89,8 @@ class SimbaApp {
         
         // Update URL
         if (updateHistory) {
-            history.pushState({}, '', '/');
+            const basePath = this.getBasePath();
+            history.pushState({}, '', basePath || '/');
         }
         
         // Update language elements
@@ -102,7 +103,8 @@ class SimbaApp {
         // Update URL
         if (updateHistory) {
             const cityUrl = city.toLowerCase().replace(/\s+/g, '-');
-            history.pushState({ city }, '', `/${cityUrl}/`);
+            const basePath = this.getBasePath();
+            history.pushState({ city }, '', `${basePath}${cityUrl}/`);
         }
         
         // Set selected city in data viewer
@@ -121,8 +123,10 @@ class SimbaApp {
     }
 
     getCityFromPath(path) {
-        // Extract city from URL path like /penha/ or /florianopolis/
-        const match = path.match(/^\/([^\/]+)\/?$/);
+        // Extract city from URL path like /simba-data-collector/penha/ or /penha/
+        const basePath = this.getBasePath();
+        const pathWithoutBase = path.replace(basePath, '/');
+        const match = pathWithoutBase.match(/^\/([^\/]+)\/?$/);
         if (match) {
             const citySlug = match[1];
             // Convert URL slug back to city name
@@ -136,6 +140,15 @@ class SimbaApp {
             return cityMap[citySlug.toLowerCase()] || null;
         }
         return null;
+    }
+
+    getBasePath() {
+        // For GitHub Pages, extract repo name from pathname, for local dev return /
+        if (window.location.hostname.includes('github.io')) {
+            const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+            return pathSegments.length > 0 ? `/${pathSegments[0]}/` : '/';
+        }
+        return '/';
     }
 
     navigateToCity(city) {
