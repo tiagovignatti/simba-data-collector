@@ -94,7 +94,7 @@ class SimbaApp {
         }
         
         // Update language elements
-        this.updateLanguageElements();
+        window.i18n.updateUI();
     }
 
     showDataViewer(city, updateHistory = true) {
