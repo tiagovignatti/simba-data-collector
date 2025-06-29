@@ -5,6 +5,7 @@ class SimbaViewer {
         this.currentData = null;
         this.filteredData = [];
         this.currentLang = 'pt';
+        this.selectedCity = null;
         this.translations = {
             pt: {
                 noDataLoaded: 'Nenhum dado carregado',
@@ -77,6 +78,17 @@ class SimbaViewer {
         document.getElementById('langToggle').addEventListener('click', () => this.toggleLanguage());
         document.getElementById('localityFilter').addEventListener('change', () => this.applyLocalityFilter());
         
+        // City selection events
+        document.querySelectorAll('.city-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const cityCard = e.target.closest('.city-card');
+                const city = cityCard.getAttribute('data-city');
+                this.selectCity(city);
+            });
+        });
+        
+        // Back button
+        document.getElementById('backToSelection').addEventListener('click', () => this.showCitySelection());
         
         const modal = document.getElementById('detailModal');
         const closeBtn = document.querySelector('.close');
@@ -84,6 +96,41 @@ class SimbaViewer {
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
+    }
+
+    selectCity(city) {
+        this.selectedCity = city;
+        console.log('Selected city:', city);
+        
+        // Update the title to show selected city
+        const titleElement = document.getElementById('selectedCityTitle');
+        const titleText = this.currentLang === 'pt' ? 'Dados de:' : 'Data from:';
+        titleElement.textContent = `${titleText} ${city}`;
+        
+        // Hide city selection and show data viewer
+        document.getElementById('citySelection').style.display = 'none';
+        document.getElementById('dataViewer').style.display = 'block';
+        
+        // Load files filtered by selected city
+        this.loadAvailableFiles();
+    }
+    
+    showCitySelection() {
+        // Show city selection and hide data viewer
+        document.getElementById('citySelection').style.display = 'block';
+        document.getElementById('dataViewer').style.display = 'none';
+        
+        // Reset selected city
+        this.selectedCity = null;
+        
+        // Clear any loaded data
+        this.currentData = null;
+        this.filteredData = [];
+        
+        // Clear map markers if map exists
+        if (this.map) {
+            this.clearMarkers();
+        }
     }
 
     async loadAvailableFiles() {
@@ -142,7 +189,18 @@ class SimbaViewer {
             
             const indexData = await response.json();
             console.log('Loaded files from index:', indexData.files);
-            return indexData.files || [];
+            
+            // Filter files by selected city if one is selected
+            let files = indexData.files || [];
+            if (this.selectedCity) {
+                files = files.filter(filename => {
+                    // Check if filename contains the selected city name
+                    return filename.toLowerCase().includes(this.selectedCity.toLowerCase());
+                });
+                console.log(`Filtered ${files.length} files for city: ${this.selectedCity}`);
+            }
+            
+            return files;
             
         } catch (error) {
             console.debug('Could not load files index:', error.message);
@@ -177,13 +235,16 @@ class SimbaViewer {
         
         const results = await Promise.all(fetchPromises);
         
-        // Filter out null results
+        // Filter out null results and filter by city if selected
         results.forEach(filename => {
             if (filename) {
-                discoveredFiles.push(filename);
+                if (!this.selectedCity || filename.toLowerCase().includes(this.selectedCity.toLowerCase())) {
+                    discoveredFiles.push(filename);
+                }
             }
         });
         
+        console.log(`Discovered ${discoveredFiles.length} files for city: ${this.selectedCity || 'all'}`);
         return discoveredFiles;
     }
 

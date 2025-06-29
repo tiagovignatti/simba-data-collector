@@ -18,6 +18,44 @@
     </header>
 
     <main>
+        <!-- City Selection Landing Page -->
+        <div id="citySelection" class="city-selection">
+            <div class="city-selection-content">
+                <h2 data-pt="Selecione a Cidade de Interesse" data-en="Select City of Interest">Selecione a Cidade de Interesse</h2>
+                <p data-pt="Escolha uma cidade para visualizar os dados de resgate de fauna marinha" data-en="Choose a city to view marine wildlife rescue data">Escolha uma cidade para visualizar os dados de resgate de fauna marinha</p>
+                
+                <div class="city-grid">
+                    <div class="city-card" data-city="Penha">
+                        <div class="city-icon">🏖️</div>
+                        <h3>Penha</h3>
+                        <p>Santa Catarina</p>
+                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                    </div>
+                    
+                    <div class="city-card" data-city="Florianópolis">
+                        <div class="city-icon">🏝️</div>
+                        <h3>Florianópolis</h3>
+                        <p>Santa Catarina</p>
+                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                    </div>
+                    
+                    <div class="city-card" data-city="Porto Belo">
+                        <div class="city-icon">⛵</div>
+                        <h3>Porto Belo</h3>
+                        <p>Santa Catarina</p>
+                        <button class="city-btn" data-pt="Visualizar Dados" data-en="View Data">Visualizar Dados</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Data Viewer (initially hidden) -->
+        <div id="dataViewer" class="data-viewer" style="display: none;">
+            <div class="viewer-header">
+                <button id="backToSelection" class="back-btn" data-pt="← Voltar para Seleção de Cidade" data-en="← Back to City Selection">← Voltar para Seleção de Cidade</button>
+                <h3 id="selectedCityTitle" data-pt="Dados de:" data-en="Data from:">Dados de:</h3>
+            </div>
+            
         <div class="controls">
             <div class="file-selector">
                 <label for="dataFile" data-pt="Selecionar Arquivo de Dados:" data-en="Select Data File:">Selecionar Arquivo de Dados:</label>
@@ -81,12 +119,13 @@
             </div>
         </div>
 
-        <div id="detailModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="detailContent"></div>
+            <div id="detailModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <div id="detailContent"></div>
+                </div>
             </div>
-        </div>
+        </div> <!-- End dataViewer -->
     </main>
 
     <footer>
