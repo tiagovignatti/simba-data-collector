@@ -1,10 +1,11 @@
 {
   "app": {
-    "title": "Resgate de Fauna Marinha",
+    "title": "Resgate de Fauna Marinha: Penha SC",
     "subtitle": "Sistema de Monitoramento Ambiental"
   },
   "navigation": {
     "backToSelection": "← Voltar para Seleção de Cidade",
+    "backToDataViewer": "← Voltar para Dados",
     "languageToggle": "🌐 EN"
   },
   "citySelection": {
@@ -25,6 +26,7 @@
     "occurrencesInLocality": "Ocorrências nesta localidade:",
     "occurrenceRecords": "Registros de Ocorrência",
     "exportCSV": "Exportar CSV",
+    "viewYearlyStats": "📊 Estatísticas Anuais",
     "showingRecords": "Mostrando {count} registros",
     "noOccurrences": "Carregue um arquivo de dados para visualizar as ocorrências",
     "noDataExport": "Nenhum dado disponível para exportar"
@@ -44,6 +46,35 @@
   "errors": {
     "selectFile": "Por favor, selecione um arquivo de dados",
     "loadError": "Erro ao carregar dados:"
+  },
+  "yearlyStats": {
+    "title": "Estatísticas Anuais",
+    "filterByLocality": "Filtrar por Localidade:"
+  },
+  "insights": {
+    "title": "Principais Insights dos Dados",
+    "subtitle": "Descobertas automáticas baseadas na análise de todos os anos disponíveis",
+    "peak": "Ano de Maior Atividade",
+    "low": "Ano de Menor Atividade",
+    "trend": "Tendência",
+    "trendUp": "Tendência Crescente",
+    "trendDown": "Tendência Decrescente",
+    "hotspot": "Principal Área de Ocorrências",
+    "variation": "Maior Variação por Local",
+    "anomaly": "Mudança Significativa",
+    "anomalyUp": "Aumento Significativo",
+    "anomalyDown": "Queda Significativa",
+    "seasonal": "Pico Sazonal",
+    "species": "Espécie Mais Comum",
+    "loading": "Carregando insights..."
+  },
+  "lastUpdated": {
+    "prefix": "Última atualização dos dados:",
+    "daysAgo": "há {count} dia{plural}",
+    "hoursAgo": "há {count} hora{plural}",
+    "lessThanHour": "há menos de 1 hora",
+    "unavailable": "Informações de atualização não disponíveis",
+    "loading": "Carregando informações de atualização..."
   },
   "footer": {
     "dataSource": "Fonte de dados: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Sistema de Monitoramento Ambiental Petrobras</a>",

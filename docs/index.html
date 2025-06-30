@@ -38,14 +38,14 @@
     
     <!-- Modular CSS -->
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/city-selection.css">
     <link rel="stylesheet" href="css/data-viewer.css">
+    <link rel="stylesheet" href="css/yearly-stats.css">
 </head>
 <body>
     <!-- Header Component -->
     <header>
         <div class="header-content">
-            <h1 i18n-text="app.title">🐢 Resgate de Fauna Marinha</h1>
+            <h1 i18n-text="app.title">🐢 Resgate de Fauna Marinha: Penha SC</h1>
         </div>
         <div class="language-toggle">
             <button id="langToggle" i18n-text="navigation.languageToggle" title="Change language">🌐 EN</button>
@@ -53,89 +53,103 @@
     </header>
 
     <main>
-        <!-- City Selection Page -->
-        <div id="citySelection" class="city-selection">
-            <div class="city-selection-content">
-                <h2 i18n-text="citySelection.title">Selecione a Cidade de Interesse</h2>
-                <p i18n-text="citySelection.subtitle">Escolha uma cidade para visualizar os dados de resgate de fauna marinha</p>
+        <!-- Data Viewer Page -->
+        <div id="dataViewer" class="data-viewer">
+
+            <!-- Last Updated Notice -->
+            <div id="lastUpdatedNotice" class="last-updated-notice">
+                <span class="update-indicator">*</span>
+                <span id="lastUpdatedText" i18n-text="lastUpdated.loading">Carregando informações de atualização...</span>
+            </div>
+
+            <!-- Data Insights Dashboard -->
+            <div id="insightsDashboard" class="insights-dashboard" style="display: none;">
+                <!-- Insights will be populated here -->
+            </div>
+
+            <!-- Yearly Statistics Section -->
+            <div id="yearlyStatsSection" class="yearly-stats-section" style="display: none;">
+                <div class="insights-header">
+                    <h3 i18n-text="yearlyStats.title">Estatísticas Anuais</h3>
+                </div>
                 
-                <div class="city-grid">
-                    <div class="city-card" data-city="Penha">
-                        <div class="city-icon">🏖️</div>
-                        <h3>Penha</h3>
-                        <p>Santa Catarina</p>
-                        <button class="city-btn" i18n-text="citySelection.viewData">Visualizar Dados</button>
+                <div class="yearly-controls">
+                    <div class="filter-group">
+                        <label for="yearlyLocalityFilter" i18n-text="yearlyStats.filterByLocality">Filtrar por Localidade:</label>
+                        <select id="yearlyLocalityFilter">
+                            <option value="all" i18n-text="dataViewer.allLocalities">Todas as Localidades</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Data Viewer Page -->
-        <div id="dataViewer" class="data-viewer" style="display: none;">
-            <div class="viewer-header">
-                <button id="backToSelection" class="back-btn" i18n-text="navigation.backToSelection">← Voltar para Seleção de Cidade</button>
-                <h3 id="selectedCityTitle" i18n-text="dataViewer.dataFrom">Dados de:</h3>
-            </div>
-            
-            <div class="controls">
-                <div class="period-selector">
-                    <label for="periodSelect" i18n-text="dataViewer.period">Período:</label>
-                    <select id="periodSelect">
-                        <option value="" i18n-text="dataViewer.loading">Carregando...</option>
-                    </select>
-                </div>
-                
-                <div class="dataset-info" id="datasetInfo" style="display: none;">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <span class="label" i18n-text="dataViewer.municipality">Município:</span>
-                            <span id="infoMunicipality">-</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label" i18n-text="dataViewer.startDate">Data Inicial:</span>
-                            <span id="infoStartDate">-</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label" i18n-text="dataViewer.endDate">Data Final:</span>
-                            <span id="infoEndDate">-</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label" i18n-text="dataViewer.totalRecords">Total de Registros:</span>
-                            <span id="infoTotalRecords">-</span>
-                        </div>
+                <div class="yearly-content">
+                    <div class="chart-container">
+                        <canvas id="yearlyChart"></canvas>
                     </div>
                     
-                    <div class="filter-section">
-                        <div class="filter-group">
-                            <label for="localityFilter" i18n-text="dataViewer.filterByLocality">Filtrar por Localidade:</label>
-                            <select id="localityFilter">
-                                <option value="" i18n-text="dataViewer.allLocalities">Todas as Localidades</option>
-                            </select>
-                            <div id="localityCount" class="locality-count" style="display: none;">
-                                <span i18n-text="dataViewer.occurrencesInLocality">Ocorrências nesta localidade:</span>
-                                <strong id="localityCountNumber">0</strong>
+                    <div id="yearlySummary" class="yearly-summary">
+                        <!-- Summary statistics will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Records Section -->
+            <div class="data-records-section">
+                <div class="insights-header">
+                    <h3 i18n-text="dataViewer.occurrenceRecords">Registros de Ocorrência</h3>
+                </div>
+                
+                <div class="content">
+                    <div class="period-selector-top">
+                        <label for="periodSelect" i18n-text="dataViewer.period">Período:</label>
+                        <select id="periodSelect">
+                            <option value="" i18n-text="dataViewer.loading">Carregando...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="controls-secondary">                
+                        <div class="dataset-info" id="datasetInfo" style="display: none;">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label" i18n-text="dataViewer.startDate">Data Inicial:</span>
+                                    <span id="infoStartDate">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label" i18n-text="dataViewer.endDate">Data Final:</span>
+                                    <span id="infoEndDate">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label" i18n-text="dataViewer.totalRecords">Total de Registros:</span>
+                                    <span id="infoTotalRecords">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <div class="filter-group">
+                                    <label for="localityFilter" i18n-text="dataViewer.filterByLocality">Filtrar por Localidade:</label>
+                                    <select id="localityFilter">
+                                        <option value="" i18n-text="dataViewer.allLocalities">Todas as Localidades</option>
+                                    </select>
+                                    <div id="localityCount" class="locality-count" style="display: none;">
+                                        <span i18n-text="dataViewer.occurrencesInLocality">Ocorrências nesta localidade:</span>
+                                        <strong id="localityCountNumber">0</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="content">
-                <div class="map-container">
-                    <div id="map"></div>
-                    <div class="map-info">
-                        <div id="recordCount" i18n-text="dataViewer.noOccurrences">Nenhum dado carregado</div>
-                    </div>
-                </div>
-
-                <div class="data-panel">
-                    <div class="panel-header">
-                        <h3 i18n-text="dataViewer.occurrenceRecords">Registros de Ocorrência</h3>
-                        <button id="exportBtn" i18n-text="dataViewer.exportCSV">Exportar CSV</button>
-                    </div>
                     
-                    <div id="occurrencesList" class="occurrences-list">
-                        <div class="no-data" i18n-text="dataViewer.noOccurrences">Carregue um arquivo de dados para visualizar as ocorrências</div>
+                    <div class="map-container">
+                        <div id="map"></div>
+                        <div class="map-info">
+                            <div id="recordCount" i18n-text="dataViewer.noOccurrences">Nenhum dado carregado</div>
+                        </div>
+                    </div>
+
+                    <div class="data-panel">
+                        <div id="occurrencesList" class="occurrences-list">
+                            <div class="no-data" i18n-text="dataViewer.noOccurrences">Carregue um arquivo de dados para visualizar as ocorrências</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -157,12 +171,14 @@
 
     <!-- External JS Dependencies -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
     <!-- Modular JavaScript -->
     <script src="js/i18n.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/city-selection.js"></script>
     <script src="js/data-viewer.js"></script>
+    <script src="js/yearly-stats.js"></script>
+    <script src="js/data-insights.js"></script>
     <script src="js/main.js"></script>
     
     <!-- GitHub Pages Configuration -->

@@ -1,10 +1,11 @@
 {
   "app": {
-    "title": "Marine Wildlife Rescue",
+    "title": "Marine Wildlife Rescue: Penha SC",
     "subtitle": "Environmental Monitoring System"
   },
   "navigation": {
     "backToSelection": "← Back to City Selection",
+    "backToDataViewer": "← Back to Data",
     "languageToggle": "🌐 PT"
   },
   "citySelection": {
@@ -25,6 +26,7 @@
     "occurrencesInLocality": "Occurrences in this locality:",
     "occurrenceRecords": "Occurrence Records",
     "exportCSV": "Export CSV",
+    "viewYearlyStats": "📊 Yearly Statistics",
     "showingRecords": "Showing {count} records",
     "noOccurrences": "Load a data file to view occurrences",
     "noDataExport": "No data available to export"
@@ -44,6 +46,35 @@
   "errors": {
     "selectFile": "Please select a data file",
     "loadError": "Error loading data:"
+  },
+  "yearlyStats": {
+    "title": "Yearly Statistics",
+    "filterByLocality": "Filter by Locality:"
+  },
+  "insights": {
+    "title": "Key Data Insights",
+    "subtitle": "Automatic discoveries based on analysis of all available years",
+    "peak": "Peak Activity Year",
+    "low": "Lowest Activity Year",
+    "trend": "Trend",
+    "trendUp": "Increasing Trend",
+    "trendDown": "Decreasing Trend",
+    "hotspot": "Primary Occurrence Area",
+    "variation": "Highest Location Variation",
+    "anomaly": "Significant Change",
+    "anomalyUp": "Significant Increase",
+    "anomalyDown": "Significant Decrease",
+    "seasonal": "Seasonal Peak",
+    "species": "Most Common Species",
+    "loading": "Loading insights..."
+  },
+  "lastUpdated": {
+    "prefix": "Last data update:",
+    "daysAgo": "{count} day{plural} ago",
+    "hoursAgo": "{count} hour{plural} ago",
+    "lessThanHour": "less than 1 hour ago",
+    "unavailable": "Update information unavailable",
+    "loading": "Loading update information..."
   },
   "footer": {
     "dataSource": "Data source: <a href='https://simba.petrobras.com.br' target='_blank'>SIMBA - Petrobras Environmental Monitoring System</a>",

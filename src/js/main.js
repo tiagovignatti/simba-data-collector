@@ -29,16 +29,19 @@ class SimbaApp {
     }
 
     initializeComponents() {
-        // Initialize city selection component
-        this.citySelection = new CitySelection();
-        window.citySelection = this.citySelection;
-        
         // Initialize data viewer component
         this.dataViewer = new DataViewer();
         window.dataViewer = this.dataViewer;
         
+        // Initialize yearly statistics component
+        this.yearlyStats = new YearlyStats();
+        window.yearlyStats = this.yearlyStats;
+        
+        // Initialize data insights component
+        this.dataInsights = new DataInsights();
+        window.dataInsights = this.dataInsights;
+        
         // Set initial language
-        this.citySelection.setLanguage(this.currentLang);
         this.dataViewer.setLanguage(this.currentLang);
     }
 
@@ -48,64 +51,17 @@ class SimbaApp {
         if (langToggle) {
             langToggle.addEventListener('click', () => this.toggleLanguage());
         }
+
     }
 
     setupInitialView() {
-        // Check URL for routing
-        const path = window.location.pathname;
-        const cityFromUrl = this.getCityFromPath(path);
-        
-        if (cityFromUrl) {
-            // Load data viewer for city from URL
-            this.showDataViewer(cityFromUrl);
-        } else {
-            // Check if there's a selected city in sessionStorage
-            const savedCity = sessionStorage.getItem('selectedCity');
-            
-            if (savedCity) {
-                // Resume where user left off and update URL
-                this.navigateToCity(savedCity);
-            } else {
-                // Start with city selection
-                this.showCitySelection();
-            }
-        }
-        
-        // Listen for browser back/forward buttons
-        window.addEventListener('popstate', (event) => {
-            const path = window.location.pathname;
-            const city = this.getCityFromPath(path);
-            
-            if (city) {
-                this.showDataViewer(city, false); // false = don't update history
-            } else {
-                this.showCitySelection(false); // false = don't update history
-            }
-        });
+        // Always start with Penha data viewer - no city selection needed
+        this.showDataViewer('Penha', false);
     }
 
-    showCitySelection(updateHistory = true) {
-        Utils.showPage('citySelection');
-        
-        // Update URL
-        if (updateHistory) {
-            const basePath = this.getBasePath();
-            history.pushState({}, '', basePath || '/');
-        }
-        
-        // Update language elements
-        window.i18n.updateUI();
-    }
 
     showDataViewer(city, updateHistory = true) {
         Utils.showPage('dataViewer');
-        
-        // Update URL
-        if (updateHistory) {
-            const cityUrl = city.toLowerCase().replace(/\s+/g, '-');
-            const basePath = this.getBasePath();
-            history.pushState({ city }, '', `${basePath}${cityUrl}/`);
-        }
         
         // Set selected city in data viewer
         this.dataViewer.setSelectedCity(city);
@@ -118,41 +74,70 @@ class SimbaApp {
             this.dataViewer.autoLoadRecentData();
         });
         
-        // Update the title with city name
-        const titleElement = document.getElementById('selectedCityTitle');
-        if (titleElement) {
-            titleElement.textContent = `${window.i18n.t('dataViewer.dataFrom')} ${city}`;
-        }
+        // Show insights dashboard
+        this.dataInsights.show();
+        
+        // Show yearly statistics section inline
+        this.showYearlyStatsInline();
+        
+        // Show last updated notice
+        this.showLastUpdatedNotice();
+        
+        // Save selected city to session storage
+        sessionStorage.setItem('selectedCity', city);
     }
 
-    getCityFromPath(path) {
-        // Extract city from URL path like /simba-data-collector/penha/ or /penha/
-        const basePath = this.getBasePath();
-        const pathWithoutBase = path.replace(basePath, '/');
-        const match = pathWithoutBase.match(/^\/([^\/]+)\/?$/);
-        if (match) {
-            const citySlug = match[1];
-            // Convert URL slug back to city name
-            const cityMap = {
-                'penha': 'Penha'
-            };
-            return cityMap[citySlug.toLowerCase()] || null;
+    showYearlyStatsInline() {
+        const yearlyStatsSection = document.getElementById('yearlyStatsSection');
+        if (yearlyStatsSection) {
+            yearlyStatsSection.style.display = 'block';
         }
-        return null;
+        // Ensure yearly stats is initialized and show it
+        this.yearlyStats.show();
+        window.i18n.updateUI();
     }
 
-    getBasePath() {
-        // For GitHub Pages, extract repo name from pathname, for local dev return /
-        if (window.location.hostname.includes('github.io')) {
-            const pathSegments = window.location.pathname.split('/').filter(segment => segment);
-            return pathSegments.length > 0 ? `/${pathSegments[0]}/` : '/';
+    async showLastUpdatedNotice() {
+        try {
+            const response = await fetch('files-index.json');
+            const index = await response.json();
+            
+            if (index.lastUpdated) {
+                const lastUpdateDate = new Date(index.lastUpdated);
+                const now = new Date();
+                const diffTime = Math.abs(now - lastUpdateDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+                
+                let timeAgoText;
+                if (diffDays > 0) {
+                    timeAgoText = `há ${diffDays} dia${diffDays > 1 ? 's' : ''}`;
+                } else if (diffHours > 0) {
+                    timeAgoText = `há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+                } else {
+                    timeAgoText = 'há menos de 1 hora';
+                }
+                
+                const formattedDate = lastUpdateDate.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const lastUpdatedText = document.getElementById('lastUpdatedText');
+                if (lastUpdatedText) {
+                    lastUpdatedText.textContent = `Última atualização dos dados: ${formattedDate} (${timeAgoText})`;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading last updated info:', error);
+            const lastUpdatedText = document.getElementById('lastUpdatedText');
+            if (lastUpdatedText) {
+                lastUpdatedText.textContent = 'Informações de atualização não disponíveis';
+            }
         }
-        return '/';
-    }
-
-    navigateToCity(city) {
-        // Public method to navigate to a city (used by city selection)
-        this.showDataViewer(city, true);
     }
 
     async toggleLanguage() {
@@ -163,13 +148,12 @@ class SimbaApp {
         await window.i18n.setLanguage(newLang);
         
         // Update all components
-        this.citySelection.setLanguage(this.currentLang);
         this.dataViewer.setLanguage(this.currentLang);
         
         // Update city title if we're in data viewer
         const titleElement = document.getElementById('selectedCityTitle');
         if (titleElement && this.dataViewer.selectedCity) {
-            titleElement.textContent = `${window.i18n.t('dataViewer.dataFrom')} ${this.dataViewer.selectedCity}`;
+            titleElement.textContent = this.dataViewer.selectedCity;
         }
         
         // Refresh current data if loaded
@@ -189,13 +173,11 @@ class SimbaApp {
     // Method to programmatically navigate
     navigateTo(page, params = {}) {
         switch(page) {
-            case 'citySelection':
-                this.showCitySelection();
-                break;
             case 'dataViewer':
-                if (params.city) {
-                    this.showDataViewer(params.city);
-                }
+                this.showDataViewer('Penha');
+                break;
+            case 'yearlyStats':
+                this.showYearlyStats();
                 break;
             default:
                 console.warn(`Unknown page: ${page}`);

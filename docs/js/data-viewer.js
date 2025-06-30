@@ -514,7 +514,6 @@ class DataViewer {
                     <div class="record-date">${Utils.formatDate(record.eventDate)}</div>
                 </div>
                 <div class="occurrence-details">
-                    <div><strong>${Utils.t('location', this.currentLang)}:</strong> ${record.municipality || Utils.t('unknown', this.currentLang)}, ${record.stateProvince || Utils.t('unknown', this.currentLang)}</div>
                     <div><strong>${Utils.t('recordedBy', this.currentLang)}:</strong> ${record.recordedBy || Utils.t('unknown', this.currentLang)}</div>
                     <div><strong>${Utils.t('lifeStage', this.currentLang)}:</strong> ${record.lifeStage || Utils.t('unknown', this.currentLang)}</div>
                     <div><strong>${Utils.t('habitat', this.currentLang)}:</strong> ${record.habitat || Utils.t('unknown', this.currentLang)}</div>
