@@ -1,0 +1,33 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#oceanGradient)"/>
+  
+  <!-- Wave pattern -->
+  <path d="M0,400 Q300,350 600,400 T1200,400 L1200,630 L0,630 Z" fill="rgba(255,255,255,0.1)"/>
+  <path d="M0,450 Q200,420 400,450 T800,450 Q1000,430 1200,450 L1200,630 L0,630 Z" fill="rgba(255,255,255,0.05)"/>
+  
+  <!-- Main content container -->
+  <rect x="100" y="100" width="1000" height="430" rx="20" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  
+  <!-- Turtle emoji -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="120" text-anchor="middle" fill="white">🐢</text>
+  
+  <!-- Title -->
+  <text x="600" y="340" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">Resgate de Fauna Marinha</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="28" text-anchor="middle" fill="rgba(255,255,255,0.9)">Visualizador de Dados SIMBA</text>
+  <text x="600" y="410" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.8)">Penha • Santa Catarina</text>
+  
+  <!-- Feature icons and text -->
+  <text x="300" y="480" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">🗺️ Mapa Interativo</text>
+  <text x="600" y="480" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">📊 Dados Completos</text>
+  <text x="900" y="480" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">🔍 Filtros Avançados</text>
+</svg>
