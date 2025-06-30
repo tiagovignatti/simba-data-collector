@@ -12,8 +12,7 @@ class DataViewer {
     }
 
     init() {
-        // Initialize map when the data viewer is shown
-        this.initMap();
+        // Don't initialize map here - wait until the data viewer is visible
         this.bindEvents();
     }
 
@@ -26,6 +25,23 @@ class DataViewer {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(this.map);
+        }
+    }
+
+    ensureMapReady() {
+        // Initialize map if not already done and container is visible
+        if (!this.map) {
+            this.initMap();
+        }
+        // Force map to recalculate size in case container was resized
+        if (this.map) {
+            // Multiple attempts to ensure proper sizing
+            setTimeout(() => {
+                this.map.invalidateSize();
+            }, 50);
+            setTimeout(() => {
+                this.map.invalidateSize();
+            }, 200);
         }
     }
 
@@ -412,9 +428,14 @@ class DataViewer {
     }
 
     displayData() {
+        this.ensureMapReady();
         this.clearMarkers();
         this.displayOccurrencesList();
-        this.addMarkersToMap();
+        
+        // Add a small delay to ensure map is fully ready before adding markers
+        setTimeout(() => {
+            this.addMarkersToMap();
+        }, 50);
     }
 
     clearMarkers() {
@@ -445,7 +466,18 @@ class DataViewer {
         });
 
         if (bounds.length > 0) {
-            this.map.fitBounds(bounds, { padding: [20, 20] });
+            // Use setTimeout to ensure map container is fully rendered
+            setTimeout(() => {
+                try {
+                    this.map.fitBounds(bounds, { padding: [20, 20] });
+                    // Force map to recalculate size after bounds change
+                    this.map.invalidateSize();
+                } catch (error) {
+                    console.warn('Error fitting map bounds:', error);
+                    // Fallback to default view if fitBounds fails
+                    this.map.setView([-26.78, -48.63], 10);
+                }
+            }, 100);
         }
     }
 

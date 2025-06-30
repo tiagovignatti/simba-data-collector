@@ -110,6 +110,9 @@ class SimbaApp {
         // Set selected city in data viewer
         this.dataViewer.setSelectedCity(city);
         
+        // Ensure map is ready now that the container is visible
+        this.dataViewer.ensureMapReady();
+        
         // Load available periods for the city and auto-load the most recent data
         this.dataViewer.loadAvailablePeriods().then(() => {
             this.dataViewer.autoLoadRecentData();
