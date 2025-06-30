@@ -35,13 +35,15 @@ def collect_all_data():
         
         for year in years:
             start_date = f"{year}-01-01"
+            end_date = f"{year}-12-31"
             
             print(f"  📅 {year}: ", end="", flush=True)
             
             try:
                 data = collector.collect_occurrences(
                     municipality=city, 
-                    start_date=start_date
+                    start_date=start_date,
+                    end_date=end_date
                 )
                 
                 if data and data.get('records'):

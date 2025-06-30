@@ -27,13 +27,14 @@ class SimbaCollector:
             print(f"Error parsing XML: {e}")
             return []
 
-    def collect_occurrences(self, municipality: str = "Penha", start_date: str = "2025-01-01") -> Optional[Dict]:
+    def collect_occurrences(self, municipality: str = "Penha", start_date: str = "2025-01-01", end_date: str = None) -> Optional[Dict]:
         """
         Collect occurrences from SIMBA API with filters
         
         Args:
             municipality: Municipality name to filter by
             start_date: Start date in YYYY-MM-DD format
+            end_date: End date in YYYY-MM-DD format (optional)
             
         Returns:
             Parsed data or None if error
@@ -41,19 +42,28 @@ class SimbaCollector:
         try:
             params = {
                 "municipality": municipality,
-                "start_date": start_date
+                "start_date": start_date,
+                "limit": 1000  # Maximum allowed limit to get more complete data
             }
+            
+            # Add end_date if provided
+            if end_date:
+                params["end_date"] = end_date
             
             response = requests.get(self.base_url, params=params)
             response.raise_for_status()
             
             records = self.parse_xml_to_dict(response.text)
             
+            filters = {
+                "municipality": municipality,
+                "start_date": start_date
+            }
+            if end_date:
+                filters["end_date"] = end_date
+                
             data = {
-                "filters": {
-                    "municipality": municipality,
-                    "start_date": start_date
-                },
+                "filters": filters,
                 "count": len(records),
                 "records": records
             }
@@ -61,6 +71,8 @@ class SimbaCollector:
             print(f"Successfully collected {len(records)} occurrences")
             print(f"Municipality: {municipality}")
             print(f"Start date: {start_date}")
+            if end_date:
+                print(f"End date: {end_date}")
             
             return data
             
@@ -122,6 +134,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Collect wildlife occurrence data from SIMBA system")
     parser.add_argument("--start-date", default="2025-01-01", 
                        help="Start date in YYYY-MM-DD format (default: 2025-01-01)")
+    parser.add_argument("--end-date", 
+                       help="End date in YYYY-MM-DD format (optional)")
     parser.add_argument("--municipality", default="Penha",
                        help="Municipality to filter by (default: Penha)")
     
@@ -129,7 +143,7 @@ if __name__ == "__main__":
     
     collector = SimbaCollector()
     
-    data = collector.collect_occurrences(municipality=args.municipality, start_date=args.start_date)
+    data = collector.collect_occurrences(municipality=args.municipality, start_date=args.start_date, end_date=args.end_date)
     
     if data:
         collector.save_data(data)
