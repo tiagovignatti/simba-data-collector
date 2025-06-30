@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive data collection script for all cities and years (2021-2025)
-This script collects wildlife rescue data for Penha, Florianópolis, and Porto Belo
+Comprehensive data collection script for Penha city years (2021-2025)
+This script collects wildlife rescue data for Penha
 for each year from 2021 to 2025.
 """
 
@@ -14,9 +14,7 @@ def collect_all_data():
     
     # Cities to collect data for
     cities = [
-        "Penha",
-        "Florianópolis", 
-        "Porto Belo"
+        "Penha"
     ]
     
     # Years to collect (2021-2025)
@@ -24,8 +22,8 @@ def collect_all_data():
     
     collector = SimbaCollector()
     
-    print("🌊 Starting comprehensive marine wildlife data collection...")
-    print(f"📍 Cities: {', '.join(cities)}")
+    print("🌊 Starting marine wildlife data collection for Penha...")
+    print(f"📍 City: {', '.join(cities)}")
     print(f"📅 Years: {', '.join(years)}")
     print("-" * 60)
     

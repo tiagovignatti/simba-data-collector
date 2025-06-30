@@ -48,7 +48,7 @@ npm run collect-and-build  # Rebuild everything
 - **`npm run clean`** - Remove all built files
 
 ### Data Management
-- **`npm run collect-all`** - Collect data for all cities (Penha, Florianópolis, Porto Belo) from 2021-2025
+- **`npm run collect-all`** - Collect data for Penha from 2021-2025
 - **`npm run update-data`** - Sync collected data files and create index for web viewer
 - **`npm run collect-and-build`** - Complete pipeline: collect data → update files → build
 
