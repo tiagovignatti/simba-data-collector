@@ -1,0 +1,58 @@
+name: Daily Data Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Run daily at 6 AM UTC
+  workflow_dispatch:     # Allow manual triggering
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    
+    - name: Collect latest data
+      run: |
+        python3 scripts/collect_all_data.py
+    
+    - name: Update files index
+      run: |
+        python3 scripts/update_files_index.py
+    
+    - name: Build site
+      run: |
+        python3 scripts/build.py
+    
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Switch to data-updates branch and commit
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git fetch origin
+        git checkout -B data-updates origin/data-updates 2>/dev/null || git checkout -b data-updates
+        git add .
+        git commit -m "🤖 Automated daily data update - $(date '+%Y-%m-%d %H:%M:%S UTC')"
+        git push origin data-updates
