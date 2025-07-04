@@ -1,4 +1,6 @@
 name: Daily Data Update
+permissions:
+  contents: write
 
 on:
   schedule:
