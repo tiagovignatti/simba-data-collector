@@ -181,7 +181,12 @@ class DataInsights {
         let variationDetails = '';
 
         locationYearlyStats.forEach((yearlyData, location) => {
-            const counts = Array.from(yearlyData.values());
+            const currentYear = new Date().getFullYear();
+            // Filter out current year for fair comparison
+            const completedYearsData = Array.from(yearlyData.entries())
+                .filter(([year, count]) => parseInt(year) < currentYear);
+            
+            const counts = completedYearsData.map(([year, count]) => count);
             if (counts.length >= 2) {
                 const max = Math.max(...counts);
                 const min = Math.min(...counts);
@@ -191,8 +196,8 @@ class DataInsights {
                     maxVariation = variation;
                     variationLocation = location;
                     
-                    const maxYear = Array.from(yearlyData.entries()).find(([year, count]) => count === max)[0];
-                    const minYear = Array.from(yearlyData.entries()).find(([year, count]) => count === min)[0];
+                    const maxYear = completedYearsData.find(([year, count]) => count === max)[0];
+                    const minYear = completedYearsData.find(([year, count]) => count === min)[0];
                     variationDetails = `${max} em ${maxYear} vs ${min} em ${minYear}`;
                 }
             }
