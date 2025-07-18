@@ -54,14 +54,12 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git fetch origin
-        # Backup existing branch if it exists
+        # Create or switch to data-updates branch
         if git show-ref --verify --quiet refs/remotes/origin/data-updates; then
-          BACKUP_NAME="data-updates-backup-$(date '+%Y%m%d-%H%M%S')"
-          git push origin origin/data-updates:refs/heads/$BACKUP_NAME
-          git push origin --delete data-updates
+          git checkout -B data-updates origin/data-updates
+        else
+          git checkout -b data-updates
         fi
-        # Create fresh branch from main
-        git checkout -b data-updates
         git add .
         git commit -m "🤖 Automated daily data update - $(date '+%Y-%m-%d %H:%M:%S UTC')"
-        git push origin data-updates
+        git push origin data-updates --force
